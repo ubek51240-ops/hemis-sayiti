@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Excel orqali Mutaxassislik Qo'shish - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<!-- NAMUNA EXCEL DOWNLOAD SECTION -->
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; margin-bottom: 30px; color: white; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-bottom: 20px; font-size: 28px;">📥 Mutaxassislik Excel Namunasini Yuklab Olish</h2>
+    <p style="margin-bottom: 20px; font-size: 16px;">To'g'ri formatdagi namuna faylni yuklab olib, mutaxassisliklar ma'lumotlarni qo'shing</p>
+    
+    <a href="{% url 'download_specialty_sample_excel' %}" style="background-color: #28a745; color: white; padding: 15px 40px; text-decoration: none; font-size: 18px; font-weight: bold; border-radius: 5px; display: inline-block; margin: 10px 5px; border: 2px solid white; transition: all 0.3s;">
+        ⬇️ Namuna Excel Faylini Yuklab Olish
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4><i class="bi bi-bookmark"></i> Excel orqali Mutaxassislik Qo'shish</h4>
+    </div>
+    <div class="card-body">
+        <!-- Yo'riqnoma -->
+        <div class="alert alert-info">
+            <h5><i class="bi bi-info-circle"></i> Yo'riqnoma</h5>
+            <p>Excel faylini quyidagi formatda tayyorlang:</p>
+            <ol>
+                <li><strong>1-ustun:</strong> Fakultet Nomi * (tizimda mavjud bo'lishi kerak)</li>
+                <li><strong>2-ustun:</strong> Mutaxassislik Nomi *</li>
+            </ol>
+            <p><strong>Eslatma:</strong> Birinchi qator sarlavha bo'lishi kerak, ma'lumotlar ikkinchi qatordan boshlanadi.</p>
+        </div>
+
+        <!-- Yuklash formasi -->
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label class="form-label">Excel faylni tanlang *</label>
+                        {{ form.excel_file }}
+                        {% if form.excel_file.errors %}
+                            <div class="text-danger">{{ form.excel_file.errors }}</div>
+                        {% endif %}
+                        <small class="text-muted">{{ form.excel_file.help_text }}</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn btn-primary w-100" id="uploadBtn">
+                                <i class="bi bi-upload"></i> Yuklash
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Progress bar (yashirin) -->
+        <div id="progressContainer" style="display: none;">
+            <div class="mt-3">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 100%">
+                        Faylni qayta ishlash...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#uploadForm').on('submit', function(e) {
+        const fileInput = $('#id_excel_file')[0];
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            e.preventDefault();
+            alert('Iltimos, Excel faylini tanlang!');
+            return;
+        }
+        
+        // Fayl turlarini tekshirish
+        const fileName = file.name.toLowerCase();
+        
+        if (!fileName.endsWith('.xlsx') && !fileName.endsWith('.xls')) {
+            e.preventDefault();
+            alert('Faqat .xlsx yoki .xls formatdagi fayllar yuklash mumkin!');
+            return;
+        }
+        
+        // Progress barni ko'rsatish
+        $('#uploadBtn').prop('disabled', true);
+        $('#progressContainer').show();
+    });
+    
+    // Fayl tanlanganda fayl nomini ko'rsatish
+    $('#id_excel_file').on('change', function() {
+        const fileName = $(this)[0].files[0]?.name || 'Fayl tanlanmagan';
+        $(this).next('.custom-file-label').text(fileName);
+    });
+});
+</script>
+{% endblock %}

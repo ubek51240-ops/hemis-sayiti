@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Kodni Tasdiqlash - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <!-- Logo Section -->
+        <div class="login-logo-section">
+            {% if 'site_logo' in request.session %}
+                <img src="{{ request.session.site_logo }}" alt="Logo">
+            {% else %}
+                <i class="bi bi-building"></i>
+            {% endif %}
+            <h3 class="mt-2">Test-sinov-ucun</h3>
+            <p class="text-muted">Talaba Boshqaruv Tizimi</p>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header bg-info text-white text-center">
+                <h4><i class="bi bi-shield-check"></i> Kodni Tasdiqlash</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-envelope"></i>
+                    <strong>Emailga kod yuborildi!</strong><br>
+                    {% if reset_email %}
+                        <strong>{{ reset_email }}</strong> manziliga kod yuborildi!<br>
+                    {% endif %}
+                    Iltimos, emailingizni tekshiring va 6 yoki 8 xonalik kodni kiriting.<br>
+                    <small class="text-muted">Kod 15 daqiqa davomida yaroqli</small>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-person"></i> Login</label>
+                        <input type="text" class="form-control" value="{{ username }}" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-key"></i> Kod (6-8 xonali)</label>
+                        <input type="text" name="code" class="form-control" required 
+                               placeholder="123456 yoki 12345678" maxlength="8" pattern="[0-9]{6,8}">
+                        <small class="text-muted">Emailga yuborilgan 6 yoki 8 xonalik kodni kiriting</small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-info w-100 text-white">
+                        <i class="bi bi-check-circle"></i> Kodni tasdiqlash
+                    </button>
+                </form>
+
+                <div class="alert alert-warning small mt-3 mb-0">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <strong>Eslatma:</strong>
+                    <ul class="mb-0 mt-1 ps-3">
+                        <li>Kod kelmagan bo'lsa <strong>Spam</strong> yoki <strong>Promotions</strong> papkasini tekshiring</li>
+                        <li>Email manzilingiz to'g'ri biriktirilganini tekshiring</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{% url 'forgot_password' %}" class="btn btn-sm btn-outline-warning">
+                    <i class="bi bi-arrow-left"></i> Orqaga
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-sm btn-outline-secondary ms-2">
+                    <i class="bi bi-x-circle"></i> Bekor qilish
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

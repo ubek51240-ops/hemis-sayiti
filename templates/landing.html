@@ -1,0 +1,733 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test-sinov-ucun - Talaba Boshqaruv Tizimi</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20260512-1">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab8 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        /* Navbar */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .navbar-brand img {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 10px 20px !important;
+            transition: all 0.3s ease;
+            border-radius: 25px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-login {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-login:hover {
+            background: white;
+            color: #1e3a5f;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 120px 0 80px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-bg-media {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .hero-bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.85) 0%, rgba(45, 90, 135, 0.75) 50%, rgba(61, 122, 184, 0.65) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            padding-right: 50px;
+        }
+
+        .hero-subtitle {
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 30px;
+        }
+
+        .hero-title span {
+            color: #ffd700;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .btn-hero {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 35px;
+            border-radius: 35px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn-hero:hover {
+            background: white;
+            color: #1e3a5f;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-hero i {
+            font-size: 1.2rem;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            color: white;
+            text-decoration: none;
+        }
+
+        .stat-card.large {
+            grid-row: span 2;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .stat-card.large .stat-number {
+            font-size: 4rem;
+        }
+
+        .stat-description {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.5;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-content {
+                padding-right: 0;
+                margin-bottom: 50px;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card.large {
+                grid-row: span 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-collapse {
+                background: rgba(30, 58, 95, 0.95);
+                padding: 20px;
+                border-radius: 15px;
+                margin-top: 15px;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .btn-hero {
+                width: 100%;
+                justify-content: center;
+                margin-right: 0;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .stat-card.large .stat-number {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'landing' %}">
+                {% if request.session.site_logo %}
+                    <img src="{{ request.session.site_logo }}" alt="Logo" class="navbar-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                    <i class="bi bi-building-fill" style="font-size: 2rem; display: none;"></i>
+                {% else %}
+                    <i class="bi bi-building-fill" style="font-size: 2rem;"></i>
+                {% endif %}
+                <span>{% if landing_content %}{{ landing_content.site_name }}{% else %}Test-sinov-ucun{% endif %}</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    style="border: none; color: white;">
+                <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'landing' %}">Bosh sahifa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">Universitet</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#faculties">Fakultetlar</a>
+                    </li>
+                    {% if news_items %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#news">Yangiliklar</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Aloqa</a>
+                    </li>
+                </ul>
+
+                <a href="{% url 'login' %}" class="btn-login">
+                    <i class="bi bi-box-arrow-in-right"></i> Kirish
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <!-- Background media (super admin yuklaydi) -->
+        {% if landing_content and landing_content.hero_video %}
+            <video class="hero-bg-media" autoplay muted loop playsinline 
+                   {% if landing_content.hero_image %}poster="{{ landing_content.hero_image.url }}"{% endif %}
+                   onerror="this.style.display='none'; document.getElementById('hero-fallback-image').style.display='block';">
+                <source src="{{ landing_content.hero_video.url }}" type="video/mp4">
+                Brauzeringiz video tegini qo'llab-quvvatlamaydi.
+            </video>
+            <!-- Fallback rasm (video ishlamasa ko'rinadi) -->
+            {% if landing_content.hero_image %}
+            <div id="hero-fallback-image" class="hero-bg-media" 
+                 style="background-image: url('{{ landing_content.hero_image.url }}'); background-size: cover; background-position: center; display: none;">
+            </div>
+            {% endif %}
+            <div class="hero-bg-overlay"></div>
+        {% elif landing_content and landing_content.hero_image %}
+            <div class="hero-bg-media" style="background-image: url('{{ landing_content.hero_image.url }}'); background-size: cover; background-position: center;"></div>
+            <div class="hero-bg-overlay"></div>
+        {% endif %}
+        <div class="container" style="position: relative; z-index: 2;">
+            <div class="row align-items-center">
+                <!-- Left Content -->
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <p class="hero-subtitle">{% if landing_content %}{{ landing_content.hero_subtitle }}{% else %}TALABA BOSHQARUV TIZIMI{% endif %}</p>
+                        <h1 class="hero-title">
+                            {% if landing_content %}{{ landing_content.hero_title }}{% else %}Ta'lim va taraqqiyot <span>yo'lidamiz</span>{% endif %}
+                        </h1>
+                        <p class="hero-description">
+                            {% if landing_content %}{{ landing_content.hero_description }}{% else %}Zamonaviy ta'lim tizimi orqali talabalarni qabul qilish, hisobotlar va boshqaruvni avtomatlashtirish{% endif %}
+                        </p>
+                        <div class="hero-buttons">
+                            {% comment %}
+                            <a href="{% url 'register' %}" class="btn-hero">
+                                Ariza yuborish <i class="bi bi-arrow-right"></i>
+                            </a>
+                            {% endcomment %}
+                            <a href="{% url 'login' %}" class="btn-hero">
+                                Tizimga kirish <i class="bi bi-box-arrow-in-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Stats -->
+                <div class="col-lg-6">
+                    <div class="stats-container">
+                        <!-- Main Stat -->
+                        <div class="stat-card large">
+                            <i class="bi bi-people-fill stat-icon"></i>
+                            <p class="stat-label">Jami talabalar</p>
+                            <h2 class="stat-number">{{ stats.total_students|default:"0" }}</h2>
+                            <p class="stat-description">
+                                Hozirgi vaqtda universitetda tahsil olayotgan talabalar soni
+                            </p>
+                        </div>
+
+                        <!-- Applications -->
+                        {% comment %}
+                        <div class="stat-card">
+                            <i class="bi bi-file-text-fill stat-icon"></i>
+                            <p class="stat-label">Arizalar</p>
+                            <h2 class="stat-number">{{ stats.total_applications|default:"0" }}</h2>
+                            <p class="stat-description">Yuborilgan arizalar</p>
+                        </div>
+                        {% endcomment %}
+
+                        <!-- Faculties -->
+                        <a href="{% url 'all_faculties' %}" class="stat-card">
+                            <i class="bi bi-building stat-icon"></i>
+                            <p class="stat-label">Fakultetlar</p>
+                            <h2 class="stat-number">{{ stats.faculties_count|default:"0" }}</h2>
+                            <p class="stat-description">Ta'lim fakultetlari</p>
+                        </a>
+
+                        <!-- Specialties -->
+                        <a href="{% url 'all_specialties' %}" class="stat-card">
+                            <i class="bi bi-journal-bookmark-fill stat-icon"></i>
+                            <p class="stat-label">Yo'nalishlar</p>
+                            <h2 class="stat-number">{{ stats.specialties_count|default:"0" }}+</h2>
+                            <p class="stat-description">Ta'lim yo'nalishlari</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Universitet haqida -->
+    <section id="about" class="info-section">
+        <div class="container">
+            <div class="section-header">
+                <p class="section-subtitle">UNIVERSITET HAQIDA</p>
+                <h2 class="section-title">{% if landing_content %}{{ landing_content.about_title }}{% else %}Bizning maqsadimiz{% endif %}</h2>
+                {% if landing_content and landing_content.about_text %}
+                <p class="text-white-50 mt-3 mx-auto" style="max-width: 700px;">{{ landing_content.about_text|linebreaks }}</p>
+                {% endif %}
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="info-card">
+                        <div class="info-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                        <h4>Sifatli ta'lim</h4>
+                        <p>Zamonaviy ta'lim texnologiyalari va malakali professor-o'qituvchilar</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-card">
+                        <div class="info-icon"><i class="bi bi-lightbulb-fill"></i></div>
+                        <h4>Innovatsion yondashuv</h4>
+                        <p>Raqamli tizim orqali talabalar va ariza jarayonlarini boshqarish</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-card">
+                        <div class="info-icon"><i class="bi bi-globe2"></i></div>
+                        <h4>Xalqaro standartlar</h4>
+                        <p>Xalqaro ta'lim standartlariga mos keluvchi o'quv dasturlari</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fakultetlar -->
+    <section id="faculties" class="info-section alt-bg">
+        <div class="container">
+            <div class="section-header">
+                <p class="section-subtitle">FAKULTETLAR</p>
+                <h2 class="section-title">Bizning fakultetlar</h2>
+            </div>
+            <div class="row g-4">
+                {% for faculty in faculties %}
+                <div class="col-md-6 col-lg-4">
+                    <a href="{% url 'faculty_detail' faculty.id %}" class="faculty-card">
+                        <div class="faculty-icon"><i class="bi bi-building"></i></div>
+                        <h5>{{ faculty.name }}</h5>
+                        <p>{{ faculty.specialty_set.count }} ta yo'nalish</p>
+                    </a>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-white-50">Hozircha fakultetlar qo'shilmagan</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Yangiliklar -->
+    {% if news_items %}
+    <section id="news" class="info-section">
+        <div class="container">
+            <div class="section-header">
+                <p class="section-subtitle">YANGILIKLAR</p>
+                <h2 class="section-title">So'nggi yangiliklar</h2>
+            </div>
+            <div class="row g-4">
+                {% for news in news_items %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="news-card">
+                        {% if news.image %}
+                        <div class="news-image">
+                            <img src="{{ news.image.url }}" alt="{{ news.title }}">
+                        </div>
+                        {% elif news.video_url %}
+                        <div class="news-video">
+                            <iframe src="{{ news.video_url }}" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        {% endif %}
+                        <div class="news-body">
+                            <h5>{{ news.title }}</h5>
+                            <p>{{ news.description|truncatechars:120 }}</p>
+                            {% if news.link %}
+                            <a href="{{ news.link }}" target="_blank" class="news-link">Batafsil <i class="bi bi-arrow-right"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Kontakt -->
+    <section id="contact" class="info-section">
+        <div class="container">
+            <div class="section-header">
+                <p class="section-subtitle">ALOQA</p>
+                <h2 class="section-title">Biz bilan bog'laning</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="contact-card">
+                        <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                        <h5>Manzil</h5>
+                        {% if landing_content and landing_content.contact_location_url %}
+                        <a href="{{ landing_content.contact_location_url }}" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">
+                            <p>{{ landing_content.contact_address|default:"Toshkent sh., O'zbekiston" }}</p>
+                        </a>
+                        {% else %}
+                        <p>{% if landing_content %}{{ landing_content.contact_address }}{% else %}Toshkent sh., O'zbekiston{% endif %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="contact-card">
+                        <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
+                        <h5>Telefon</h5>
+                        <p><a href="tel:{% if landing_content %}{{ landing_content.contact_phone }}{% else %}+998711234567{% endif %}" style="color: rgba(255,255,255,0.8); text-decoration: none;">{% if landing_content %}{{ landing_content.contact_phone }}{% else %}+998 71 123 45 67{% endif %}</a></p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="contact-card">
+                        <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+                        <h5>Email</h5>
+                        <p><a href="mailto:{% if landing_content %}{{ landing_content.contact_email }}{% else %}info@minihemis.uz{% endif %}" style="color: rgba(255,255,255,0.8); text-decoration: none;">{% if landing_content %}{{ landing_content.contact_email }}{% else %}info@minihemis.uz{% endif %}</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="container">
+            <p class="mb-0">&copy; {% now "Y" %} Test-sinov-ucun. Barcha huquqlar himoyalangan.</p>
+        </div>
+    </footer>
+
+    <style>
+        /* Sections */
+        .info-section {
+            padding: 80px 0;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .info-section.alt-bg {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .section-subtitle {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Info cards */
+        .info-card, .faculty-card, .contact-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 35px 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+        .info-card:hover, .faculty-card:hover, .contact-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            color: white;
+            text-decoration: none;
+        }
+        .info-icon, .faculty-icon, .contact-icon {
+            font-size: 3rem;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        .info-card h4, .faculty-card h5, .contact-card h5 {
+            color: white;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .info-card p, .faculty-card p, .contact-card p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer-section {
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 30px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* News Cards */
+        .news-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+            color: white;
+        }
+        .news-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+        }
+        .news-image, .news-video {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .news-card:hover .news-image img {
+            transform: scale(1.05);
+        }
+        .news-video iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .news-body {
+            padding: 25px;
+        }
+        .news-body h5 {
+            color: white;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .news-body p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+        }
+        .news-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+            transition: gap 0.2s ease;
+        }
+        .news-link:hover {
+            color: #ffd700;
+            gap: 12px;
+        }
+
+        /* Hero media */
+        .hero-media {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .hero-media img, .hero-media video {
+            width: 100%;
+            display: block;
+        }
+
+        /* Smooth scroll */
+        html { scroll-behavior: smooth; }
+
+        @media (max-width: 768px) {
+            .section-title { font-size: 1.8rem; }
+            .info-section { padding: 50px 0; }
+        }
+    </style>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Smooth scroll with navbar offset -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    const navHeight = document.querySelector('.navbar-custom').offsetHeight;
+                    const targetPos = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
+                    window.scrollTo({ top: targetPos, behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

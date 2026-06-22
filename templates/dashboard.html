@@ -1,0 +1,813 @@
+{% extends 'base.html' %}
+{% block title %}Bosh Sahifa - Test-sinov-ucun{% endblock %}
+{% block content %}
+<h2><i class="bi bi-speedometer2"></i> Boshqaruv Paneli</h2>
+<hr>
+
+{% if role != 'archive' %}
+<!-- Statistika - BOSILADIGAN QILIB O'ZGARTIRILDI -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}status=" 
+           class="text-decoration-none">
+            <div class="card bg-primary text-white h-100" style="cursor: pointer;">
+                <div class="card-body text-center">
+                    <h3>{{ stats.total }}</h3>
+                    <p>Jami Talabalar</p>
+                    <small><i class="bi bi-hand-index-thumb"></i> Barchasini ko'rish</small>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}status=pending" 
+           class="text-decoration-none">
+            <div class="card bg-warning text-dark h-100" style="cursor: pointer;">
+                <div class="card-body text-center">
+                    <h3>{{ stats.pending }}</h3>
+                    <p>Kutilmoqda</p>
+                    <small><i class="bi bi-hand-index-thumb"></i> Ko'rish</small>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}status=approved" 
+           class="text-decoration-none">
+            <div class="card bg-success text-white h-100" style="cursor: pointer;">
+                <div class="card-body text-center">
+                    <h3>{{ stats.approved }}</h3>
+                    <p>Qabul Qilindi</p>
+                    <small><i class="bi bi-hand-index-thumb"></i> Ko'rish</small>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}status=rejected" 
+           class="text-decoration-none">
+            <div class="card bg-danger text-white h-100" style="cursor: pointer;">
+                <div class="card-body text-center">
+                    <h3>{{ stats.rejected }}</h3>
+                    <p>Rad Etildi</p>
+                    <small><i class="bi bi-hand-index-thumb"></i> Ko'rish</small>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- GRAFIKLAR -->
+{% if charts_data_json and stats.total > 0 %}
+<div class="row mb-4" id="charts-section">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-graph-up"></i> Oylik Ro'yxatdan O'tish Dinamikasi</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-pie-chart-fill"></i> Holatlar bo'yicha</h6>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="statusChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-bar-chart-fill"></i> Fakultetlar bo'yicha (TOP 8)</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="facultyChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-mortarboard-fill"></i> Kurslar bo'yicha</h6>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="courseChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script id="charts-data" type="application/json">{{ charts_data_json|safe }}</script>
+<script>
+(function() {
+    const chartsData = JSON.parse(document.getElementById('charts-data').textContent);
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const textColor = isDark ? '#e2e8f0' : '#475569';
+    const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+    Chart.defaults.color = textColor;
+    Chart.defaults.font.family = 'Inter, sans-serif';
+
+    const palette = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#f97316'];
+
+    // 1) Monthly line chart
+    if (chartsData.monthly_labels.length) {
+        new Chart(document.getElementById('monthlyChart'), {
+            type: 'line',
+            data: {
+                labels: chartsData.monthly_labels,
+                datasets: [{
+                    label: "Ro'yxatdan o'tganlar",
+                    data: chartsData.monthly_counts,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                    borderWidth: 3,
+                    tension: 0.35,
+                    fill: true,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#3b82f6',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0 } },
+                    x: { grid: { color: gridColor } }
+                }
+            }
+        });
+    }
+
+    // 2) Status doughnut chart
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Kutilmoqda', 'Qabul qilindi', 'Rad etildi'],
+            datasets: [{
+                data: chartsData.status_counts,
+                backgroundColor: ['#f59e0b','#10b981','#ef4444'],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true } }
+            }
+        }
+    });
+
+    // 3) Faculty bar chart
+    if (chartsData.faculty_labels.length) {
+        new Chart(document.getElementById('facultyChart'), {
+            type: 'bar',
+            data: {
+                labels: chartsData.faculty_labels,
+                datasets: [{
+                    label: 'Talabalar soni',
+                    data: chartsData.faculty_counts,
+                    backgroundColor: palette,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0 } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // 4) Course pie chart
+    if (chartsData.course_labels.length) {
+        new Chart(document.getElementById('courseChart'), {
+            type: 'pie',
+            data: {
+                labels: chartsData.course_labels,
+                datasets: [{
+                    data: chartsData.course_counts,
+                    backgroundColor: palette,
+                    borderWidth: 2,
+                    borderColor: isDark ? '#0f172a' : '#ffffff',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true } } }
+            }
+        });
+    }
+})();
+</script>
+{% endif %}
+{% endif %}
+
+<!-- Qidiruv va Kengaytirilgan Filtr -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label small text-muted mb-1">Qidiruv</label>
+                <input type="text" name="q" class="form-control"
+                       placeholder="Ism, Pasport yoki JSHSHIR..."
+                       value="{{ request.GET.q }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Holat</label>
+                <select name="status" class="form-select">
+                    <option value="">Barcha holatlar</option>
+                    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                    <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>Qabul Qilindi</option>
+                    <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rad Etildi</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted mb-1">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Qidirish
+                </button>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">&nbsp;</label>
+                <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                    <i class="bi bi-sliders"></i> Kengaytirilgan filtr
+                </button>
+            </div>
+
+            <!-- Advanced filters - collapsible -->
+            <div class="col-12 collapse {% if request.GET.course or request.GET.faculty or request.GET.specialty or request.GET.date_from or request.GET.date_to or request.GET.source %}show{% endif %}" id="advancedFilters">
+                <hr class="my-2">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Kurs</label>
+                        <select name="course" class="form-select form-select-sm">
+                            <option value="">Barchasi</option>
+                            {% for c in '1234' %}
+                            <option value="{{ c }}" {% if request.GET.course == c %}selected{% endif %}>{{ c }}-kurs</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-1">Fakultet</label>
+                        <select name="faculty" class="form-select form-select-sm">
+                            <option value="">Barchasi</option>
+                            {% for f in all_faculties %}
+                            <option value="{{ f.id }}" {% if request.GET.faculty == f.id|stringformat:'s' %}selected{% endif %}>{{ f.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-1">Mutaxassislik</label>
+                        <select name="specialty" class="form-select form-select-sm">
+                            <option value="">Barchasi</option>
+                            {% for s in all_specialties %}
+                            <option value="{{ s.id }}" {% if request.GET.specialty == s.id|stringformat:'s' %}selected{% endif %}>{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Sana (dan)</label>
+                        <input type="date" name="date_from" class="form-control form-control-sm" value="{{ request.GET.date_from }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Sana (gacha)</label>
+                        <input type="date" name="date_to" class="form-control form-control-sm" value="{{ request.GET.date_to }}">
+                    </div>
+                    {% if role == 'admin' or role == 'super_admin' %}
+                    {% comment %}
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-1">Manba</label>
+                        <select name="source" class="form-select form-select-sm">
+                            <option value="">Barchasi</option>
+                            <option value="operator" {% if request.GET.source == 'operator' %}selected{% endif %}>Operator qo'shgan</option>
+                            <option value="self" {% if request.GET.source == 'self' %}selected{% endif %}>O'zi ro'yxatdan o'tgan</option>
+                        </select>
+                    </div>
+                    {% endcomment %}
+                    {% endif %}
+                    <div class="col-md-3 d-flex align-items-end">
+                        <a href="?" class="btn btn-sm btn-outline-danger w-100">
+                            <i class="bi bi-x-circle"></i> Filtrlarni tozalash
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mt-2">
+                {% if role == 'operator' %}
+                    <a href="{% url 'excel_requests_list' %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-file-earmark-excel"></i> Excel So'rovi
+                    </a>
+                {% elif role == 'admin' or role == 'super_admin' %}
+                    <a href="{% url 'export_excel' %}?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}"
+                       class="btn btn-success btn-sm">
+                        <i class="bi bi-file-earmark-excel"></i> Excel Yuklash (filtr bilan)
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Qidiruv natijalari -->
+{% if request.GET.q %}
+<div class="alert alert-info d-flex justify-content-between align-items-center">
+    <div>
+        <i class="bi bi-funnel-fill"></i> 
+        <strong>Qidiruv:</strong> "{{ request.GET.q }}"
+    </div>
+    <div>
+        {% if request.GET.status %}
+            {% if request.GET.status == 'pending' %}
+                - Status: Kutilmoqda
+            {% elif request.GET.status == 'approved' %}
+                - Status: Qabul Qilindi
+            {% elif request.GET.status == 'rejected' %}
+                - Status: Rad Etildi
+            {% endif %}
+        {% endif %}
+        <a href="?{% if request.GET.status %}status={{ request.GET.status }}{% endif %}" 
+           class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-x-circle"></i> Filtrni o'chirish
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Filtr holatini ko'rsatish -->
+{% if request.GET.status %}
+<div class="alert alert-info d-flex justify-content-between align-items-center">
+    <div>
+        <i class="bi bi-funnel-fill"></i> 
+        <strong>Filtr:</strong> 
+        {% if request.GET.status == 'pending' %}
+            Kutilmoqda
+        {% elif request.GET.status == 'approved' %}
+            Qabul Qilindi
+        {% elif request.GET.status == 'rejected' %}
+            Rad Etildi
+        {% endif %}
+    </div>
+    <a href="?{% if request.GET.q %}q={{ request.GET.q }}{% endif %}" 
+       class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-x-circle"></i> Filtrni o'chirish
+    </a>
+</div>
+{% endif %}
+
+<!-- Talabalar Jadvali -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="mb-0"><i class="bi bi-people"></i> Talabalar Ro'yxati</h5>
+        {% if role == 'admin' or role == 'super_admin' %}
+        <!-- Bulk Action Bar -->
+        <div id="bulkActionBar" class="d-none align-items-center gap-2">
+            <span class="badge bg-primary" id="bulkSelectedCount">0 ta tanlangan</span>
+            <form id="bulkActionForm" method="post" action="{% url 'bulk_student_action' %}" class="d-flex gap-1" onsubmit="return confirmBulkAction(event)">
+                {% csrf_token %}
+                <input type="hidden" name="action" id="bulkActionInput">
+                <input type="hidden" name="redirect_url" value="{{ request.get_full_path }}">
+                <div id="bulkHiddenIds"></div>
+                <button type="button" class="btn btn-sm btn-success" onclick="submitBulk('approve')">
+                    <i class="bi bi-check-lg"></i> Tasdiqlash
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="submitBulk('reject')">
+                    <i class="bi bi-x-lg"></i> Rad etish
+                </button>
+                <button type="button" class="btn btn-sm btn-danger" onclick="submitBulk('delete')">
+                    <i class="bi bi-trash"></i> O'chirish
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        {% if role == 'admin' or role == 'super_admin' %}
+                        <th style="width: 36px;">
+                            <input type="checkbox" id="selectAll" class="form-check-input" title="Barchasini tanlash">
+                        </th>
+                        {% endif %}
+                        <th>#</th>
+                        <th>Pasport</th>
+                        <th>Ism Familiya</th>
+                        <th>HEMIS ID</th>
+                        <th>Kurs</th>
+                        <th>Fakultet</th>
+                        <th>Holat</th>
+                        <th>{% if role == 'talaba_viewer' %}Qo'shgan Admin{% else %}Qo'shgan{% endif %}</th>
+                        <th>{% if role == 'talaba_viewer' %}Tasdiqlagan Admin{% elif role == 'operator' %}Tasdiqlagan/Rad etgan Admin{% else %}Admin Izohi{% endif %}</th>
+                        <th>Hujjatlar</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        {% if role == 'admin' or role == 'super_admin' %}
+                        <td>
+                            <input type="checkbox" class="form-check-input student-checkbox" value="{{ student.id }}">
+                        </td>
+                        {% endif %}
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ student.passport }}</strong></td>
+                        <td>{{ student.full_name }}</td>
+                        <td><span class="badge bg-info">{{ student.hemis_id|default:"-" }}</span></td>
+                        <td>{{ student.course }}-kurs</td>
+                        <td>{{ student.faculty.name|default:"-" }}</td>
+                        <td>
+                            {% if student.status == 'pending' %}
+                                <span class="badge bg-warning">Kutilmoqda</span>
+                            {% elif student.status == 'approved' %}
+                                <span class="badge bg-success">Qabul</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rad</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if student.created_by %}
+                                <div class="d-flex flex-column">
+                                    <strong>{{ student.created_by.username }}</strong>
+                                    <small class="text-muted">{{ student.created_at|date:"d.m.Y H:i" }}</small>
+                                </div>
+                            {% else %}
+                                <span class="text-muted">Noma'lum</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if role == 'talaba_viewer' %}
+                                {% if student.status == 'approved' %}
+                                    <div class="d-flex flex-column">
+                                        <strong class="text-success">Tasdiqlagan: {{ student.approved_by.username|default:"Noma'lum" }}</strong>
+                                        <small class="text-muted">{{ student.approved_at|date:"d.m.Y H:i" }}</small>
+                                        {% if student.comment %}
+                                            <small class="text-info">Izoh: {{ student.comment|truncatechars:50 }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% elif student.status == 'rejected' %}
+                                    <div class="d-flex flex-column">
+                                        <strong class="text-danger">Rad etgan: {{ student.approved_by.username|default:"Noma'lum" }}</strong>
+                                        <small class="text-muted">{{ student.approved_at|date:"d.m.Y H:i" }}</small>
+                                        {% if student.comment %}
+                                            <small class="text-warning">Sabab: {{ student.comment|truncatechars:50 }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% elif role == 'operator' %}
+                                {% if student.approved_by %}
+                                    <div class="d-flex flex-column">
+                                        {% if student.status == 'approved' %}
+                                            <strong class="text-success">{{ student.approved_by.username }}</strong>
+                                            <small class="text-muted">{{ student.approved_at|date:"d.m.Y H:i" }}</small>
+                                            {% if student.comment %}
+                                                <small class="text-info">Izoh: {{ student.comment|truncatechars:50 }}</small>
+                                            {% endif %}
+                                        {% elif student.status == 'rejected' %}
+                                            <strong class="text-danger">{{ student.approved_by.username }}</strong>
+                                            <small class="text-muted">{{ student.approved_at|date:"d.m.Y H:i" }}</small>
+                                            {% if student.comment %}
+                                                <small class="text-warning">Sabab: {{ student.comment|truncatechars:50 }}</small>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">Jarayon yo'q</span>
+                                {% endif %}
+                            {% elif role == 'admin' or role == 'super_admin' %}
+                                {% if student.status == 'approved' %}
+                                    <div class="d-flex flex-column">
+                                        <strong class="text-success">Tasdiqlangan</strong>
+                                        <small class="text-muted">Kim: {{ student.approved_by.username|default:"Noma'lum" }}</small>
+                                        {% if student.comment %}
+                                            <small class="text-info" title="{{ student.comment }}">Izoh: {{ student.comment|truncatechars:50 }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% elif student.status == 'rejected' %}
+                                    <div class="d-flex flex-column">
+                                        <strong class="text-danger">Rad etilgan</strong>
+                                        <small class="text-muted">Kim: {{ student.approved_by.username|default:"Noma'lum" }}</small>
+                                        {% if student.comment %}
+                                            <small class="text-warning" title="{{ student.comment }}">Sabab: {{ student.comment|truncatechars:50 }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">Kutilmoqda</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if role == 'operator' or role == 'admin' or role == 'super_admin' or role == 'archive' %}
+                                <div class="d-flex flex-column gap-2">
+                                    {% if student.transcript %}
+                                        <a href="{{ student.transcript.url }}" target="_blank" class="badge bg-info text-dark">Transkript</a>
+                                    {% endif %}
+                                    {% if student.passport_scan %}
+                                        <a href="{{ student.passport_scan.url }}" target="_blank" class="badge bg-secondary text-white">Pasport</a>
+                                    {% endif %}
+                                    {% if student.additional_documents %}
+                                        <a href="{{ student.additional_documents.url }}" target="_blank" class="badge bg-warning text-dark">Qo'shimcha</a>
+                                    {% endif %}
+                                    {% if not student.transcript and not student.passport_scan and not student.additional_documents %}
+                                        <span class="text-muted">Hujjat yo'q</span>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if role == 'operator' %}
+                                {% if student.status == 'pending' %}
+                                    <a href="{% url 'edit_student' student.pk %}" 
+                                       class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> Tahrirlash
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            {% elif role == 'admin' or role == 'super_admin' %}
+                                <a href="{% url 'process_student' student.pk %}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye"></i> Tasdiqlash
+                                </a>
+                                {# To'lov tugmasi vaqtincha olib tashlandi #}
+                                {# {% if student.status == 'approved' %} #}
+                                {# <a href="{% url 'view_payments' student.pk %}"  #}
+                                {#    class="btn btn-sm btn-info"> #}
+                                {#     <i class="bi bi-cash-coin"></i> To'lov #}
+                                {# </a> #}
+                                {# {% endif %} #}
+                                <a href="{% url 'delete_student' student.pk %}" 
+                                   class="btn btn-sm btn-danger" 
+                                   onclick="return confirm('Haqiqatan ham o\'chirmoqchimisiz?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            {% elif role == 'accountant' %}
+                                {# To'lovni ko'rish tugmasi vaqtincha olib tashlandi #}
+                                <span class="text-muted">-</span>
+                            {% elif role == 'talaba_viewer' or role == 'archive' %}
+                                {# To'lovni ko'rish tugmasi vaqtincha olib tashlandi #}
+                                <span class="text-muted">-</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{% if role == 'admin' or role == 'super_admin' %}12{% else %}11{% endif %}" class="text-center text-muted">
+                            <i class="bi bi-inbox"></i> Talabalar topilmadi
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include '_pagination.html' %}
+    </div>
+</div>
+
+{% if role == 'admin' or role == 'super_admin' %}
+<script>
+(function() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.student-checkbox');
+    const bulkBar = document.getElementById('bulkActionBar');
+    const countBadge = document.getElementById('bulkSelectedCount');
+
+    function updateBulkBar() {
+        const selected = document.querySelectorAll('.student-checkbox:checked');
+        if (selected.length > 0) {
+            bulkBar.classList.remove('d-none');
+            bulkBar.classList.add('d-flex');
+            countBadge.textContent = selected.length + ' ta tanlangan';
+        } else {
+            bulkBar.classList.add('d-none');
+            bulkBar.classList.remove('d-flex');
+        }
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateBulkBar();
+        });
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', updateBulkBar));
+
+    window.submitBulk = function(action) {
+        const selected = Array.from(document.querySelectorAll('.student-checkbox:checked')).map(cb => cb.value);
+        if (selected.length === 0) {
+            alert('Iltimos, kamida bitta talabani tanlang.');
+            return;
+        }
+        const messages = {
+            approve: `${selected.length} ta talabani TASDIQLASHni xohlaysizmi?`,
+            reject: `${selected.length} ta talabani RAD ETISHni xohlaysizmi?`,
+            delete: `${selected.length} ta talabani O'CHIRISHni xohlaysizmi? Bu amalni qaytarib bo'lmaydi!`
+        };
+        if (!confirm(messages[action])) return;
+
+        document.getElementById('bulkActionInput').value = action;
+        const hiddenContainer = document.getElementById('bulkHiddenIds');
+        hiddenContainer.innerHTML = '';
+        selected.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'student_ids';
+            input.value = id;
+            hiddenContainer.appendChild(input);
+        });
+        document.getElementById('bulkActionForm').submit();
+    };
+
+    window.confirmBulkAction = function(e) { return true; };
+})();
+</script>
+{% endif %}
+
+<!-- Operatorlar Statistikasi -->
+{% if operator_stats %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h5><i class="bi bi-bar-chart"></i> Operatorlar Statistikasi</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Operator</th>
+                    <th>Jami</th>
+                    <th>Qabul</th>
+                    <th>Rad</th>
+                    <th>Kutilmoqda</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for op in operator_stats %}
+                <tr>
+                    <td>{{ op.created_by__username|default:"Noma'lum" }}</td>
+                    <td>{{ op.total }}</td>
+                    <td>{{ op.approved }}</td>
+                    <td>{{ op.rejected }}</td>
+                    <td>{{ op.pending }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Bloklangan Foydalanuvchilar (Super Admin) -->
+{% if role == 'super_admin' %}
+<div class="card mt-4">
+    <div class="card-header bg-danger text-white">
+        <h5><i class="bi bi-shield-exclamation"></i> Bloklangan Foydalanuvchilar</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>IP Address</th>
+                        <th>Urinishlar</th>
+                        <th>Vaqt</th>
+                        <th>Amal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in blocked_attempts %}
+                    <tr>
+                        <td><strong>{{ attempt.username|default:"Noma'lum" }}</strong></td>
+                        <td>{{ attempt.ip_address|default:"Noma'lum" }}</td>
+                        <td><span class="badge bg-danger">{{ attempt.failures_since_start|default:0 }}</span></td>
+                        <td>{{ attempt.attempt_time|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            <a href="{% url 'unlock_user_direct' attempt.username %}" 
+                               class="btn btn-sm btn-warning"
+                               onclick="return confirm('{{ attempt.username }} foydalanuvchini blokdan chiqarishni tasdiqlaysizmi?')">
+                                <i class="bi bi-unlock"></i> Blokdan chiqar
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-success">
+                            <i class="bi bi-check-circle"></i> Bloklangan foydalanuvchilar yo'q
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'blocked_users' %}" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-list-ul"></i> Barchasini ko'rish
+            </a>
+            <a href="{% url 'unblock_super_admin_profile' %}" class="btn btn-sm btn-warning">
+                <i class="bi bi-unlock"></i> Profilni blokdan chiqarish
+            </a>
+            <a href="{% url 'clear_all_super_admin_blocks' %}" class="btn btn-sm btn-success">
+                <i class="bi bi-shield-check"></i> Super Admin larni ochirish
+            </a>
+            <a href="{% url 'clear_all_blocks' %}" class="btn btn-sm btn-danger"
+               onclick="return confirm('BARCHA bloklangan foydalanuvchilarni ochirishni tasdiqlaysizmi?')">
+                <i class="bi bi-trash"></i> BARCHA bloklarni o'chirish
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Email Sozlamalari (Super Admin) -->
+{% if role == 'super_admin' %}
+<div class="card mt-4">
+    <div class="card-header bg-primary text-white">
+        <h5><i class="bi bi-envelope-gear"></i> Email Sozlamalari</h5>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            <strong>Email sozlamalari:</strong> Parolni tiklash kodlari uchun email sozlamalari
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'email_settings' %}" class="btn btn-primary">
+                <i class="bi bi-envelope-gear"></i> Email Sozlamalari
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Audit Loglar (Super Admin) -->
+{% if recent_logs %}
+<div class="card mt-4">
+    <div class="card-header bg-dark text-white">
+        <h5><i class="bi bi-activity"></i> Oxirgi Amallar (Audit Log)</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th>Vaqt</th>
+                        <th>Foydalanuvchi</th>
+                        <th>Amal</th>
+                        <th>Tafsilotlar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in recent_logs %}
+                    <tr>
+                        <td>{{ log.timestamp|date:"d.m.Y H:i" }}</td>
+                        <td>{{ log.user.username|default:"System" }}</td>
+                        <td>{{ log.action }}</td>
+                        <td>{{ log.details|truncatechars:50 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <a href="{% url 'audit_logs' %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-list-ul"></i> Barcha loglarni ko'rish
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% block extra_js %}
+<script>
+// Tooltip aktivlashtirish
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl)
+})
+</script>
+{% endblock %}
+{% endblock %}

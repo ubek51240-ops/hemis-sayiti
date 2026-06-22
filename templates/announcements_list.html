@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}E'lonlar - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-megaphone"></i> E'lonlar</h2>
+    {% if can_manage %}
+    <a href="{% url 'create_announcement' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Yangi E'lon
+    </a>
+    {% endif %}
+</div>
+
+{% if announcements %}
+<div class="row">
+    {% for ann in announcements %}
+    <div class="col-md-6 mb-4">
+        <div class="card {% if ann.is_important %}border-danger{% else %}border-primary{% endif %}">
+            <div class="card-header {% if ann.is_important %}bg-danger text-white{% else %}bg-primary text-white{% endif %}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        {% if ann.is_important %}📢 {% endif %}
+                        {{ ann.title }}
+                    </h5>
+                    {% if can_manage %}
+                    <a href="{% url 'delete_announcement' ann.id %}" 
+                       class="btn btn-sm btn-outline-light"
+                       onclick="return confirm('O\'chirmoqchimisiz?')">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <p>{{ ann.message|linebreaks }}</p>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <small class="text-muted">
+                        <i class="bi bi-person"></i> {{ ann.created_by.username }}
+                    </small>
+                    <small class="text-muted">
+                        <i class="bi bi-clock"></i> {{ ann.created_at|date:"d.m.Y H:i" }}
+                    </small>
+                </div>
+                {% if ann.expires_at %}
+                <div class="mt-2">
+                    <small class="text-danger">
+                        <i class="bi bi-alarm"></i> Muddati: {{ ann.expires_at|date:"d.m.Y H:i" }}
+                    </small>
+                </div>
+                {% endif %}
+                <div class="mt-2">
+                    <span class="badge bg-info">
+                        {% if ann.target_group == 'all' %}
+                            🌍 Barcha foydalanuvchilar
+                        {% elif ann.target_group == 'super_admin' %}
+                            👑 Super Admin
+                        {% elif ann.target_group == 'admin' %}
+                            👨‍💼 Admin
+                        {% else %}
+                            👤 Operator
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="bi bi-info-circle"></i> Hozircha e'lonlar yo'q
+</div>
+{% endif %}
+
+<div class="mt-3">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Orqaga
+    </a>
+</div>
+{% endblock %}

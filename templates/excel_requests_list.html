@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Excel Yuklash So'rovlari - Test-sinov-ucun{% endblock %}
+{% block content %}
+<h2><i class="bi bi-file-earmark-excel"></i> Excel Yuklash So'rovlari</h2>
+<hr>
+
+{% if user.profile.role == 'operator' %}
+<div class="mb-3">
+    <a href="{% url 'request_excel' %}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Yangi So'rov Yuborish
+    </a>
+</div>
+{% endif %}
+
+<!-- Filtr -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <select name="status" class="form-control">
+                    <option value="">Barcha holatlar</option>
+                    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                    <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>Tasdiqlandi</option>
+                    <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rad etildi</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Filtr
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'excel_requests_list' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-x-circle"></i> Tozalash
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- So'rovlar Jadvali -->
+<div class="card">
+    <div class="card-header">
+        <h5><i class="bi bi-list-ul"></i> So'rovlar Ro'yxati</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Sana</th>
+                        <th>Operator</th>
+                        <th>Sabab</th>
+                        <th>Holat</th>
+                        <th>Admin Izohi</th>
+                        <th>Yuklash</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in excel_requests %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ req.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ req.requested_by.username }}</td>
+                        <td>{{ req.reason|truncatechars:50 }}</td>
+                        <td>
+                            {% if req.status == 'pending' %}
+                                <span class="badge bg-warning">Kutilmoqda</span>
+                            {% elif req.status == 'approved' %}
+                                <span class="badge bg-success">Tasdiqlandi</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rad etildi</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ req.admin_comment|truncatechars:30|default:"-" }}</td>
+                        <td>{{ req.download_count }} marta</td>
+                        <td>
+                            {% if user.profile.role == 'operator' %}
+                                {% if req.status == 'approved' %}
+                                    <a href="{% url 'export_excel' %}" class="btn btn-sm btn-success">
+                                        <i class="bi bi-download"></i> Yuklash
+                                    </a>
+                                {% elif req.status == 'pending' %}
+                                    <span class="text-muted">Kutilmoqda...</span>
+                                {% else %}
+                                    <span class="text-danger">Rad etilgan</span>
+                                {% endif %}
+                            {% elif user.profile.role == 'admin' or user.profile.role == 'super_admin' %}
+                                {% if req.status == 'pending' %}
+                                    <a href="{% url 'process_excel_request' req.pk %}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-check-circle"></i> Ko'rish
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'process_excel_request' req.pk %}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> Ko'rish
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">So'rovlar topilmadi</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

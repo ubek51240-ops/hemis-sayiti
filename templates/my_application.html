@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}Mening arizam - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header {% if application.status == 'pending' %}bg-warning{% elif application.status == 'approved' %}bg-success{% else %}bg-danger{% endif %} text-white">
+                    <h4><i class="bi bi-journal-bookmark"></i> Mening arizam</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Ariza Timeline -->
+                    <div class="application-timeline mb-4">
+                        <style>
+                            .timeline-wrapper {
+                                position: relative;
+                                padding: 20px 0;
+                            }
+                            .timeline-steps {
+                                display: flex;
+                                justify-content: space-between;
+                                position: relative;
+                                margin: 0;
+                                padding: 0;
+                                list-style: none;
+                            }
+                            .timeline-steps::before {
+                                content: '';
+                                position: absolute;
+                                top: 22px;
+                                left: 8%;
+                                right: 8%;
+                                height: 4px;
+                                background: #e5e7eb;
+                                z-index: 0;
+                                border-radius: 4px;
+                            }
+                            .timeline-progress {
+                                position: absolute;
+                                top: 22px;
+                                left: 8%;
+                                height: 4px;
+                                background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+                                z-index: 1;
+                                border-radius: 4px;
+                                transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                            }
+                            .timeline-step {
+                                position: relative;
+                                z-index: 2;
+                                text-align: center;
+                                flex: 1;
+                            }
+                            .timeline-icon {
+                                width: 48px;
+                                height: 48px;
+                                margin: 0 auto;
+                                border-radius: 50%;
+                                background: #e5e7eb;
+                                color: #9ca3af;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 1.3rem;
+                                border: 4px solid #ffffff;
+                                box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+                                transition: all 0.4s ease;
+                            }
+                            .timeline-step.completed .timeline-icon {
+                                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                                color: #ffffff;
+                                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+                            }
+                            .timeline-step.active .timeline-icon {
+                                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                                color: #ffffff;
+                                box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.18), 0 4px 12px rgba(59, 130, 246, 0.35);
+                                animation: pulse-blue 2s infinite;
+                            }
+                            .timeline-step.rejected .timeline-icon {
+                                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                                color: #ffffff;
+                                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+                            }
+                            @keyframes pulse-blue {
+                                0%, 100% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.18), 0 4px 12px rgba(59, 130, 246, 0.35); }
+                                50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0.08), 0 4px 12px rgba(59, 130, 246, 0.45); }
+                            }
+                            .timeline-label {
+                                margin-top: 10px;
+                                font-weight: 600;
+                                font-size: 0.88rem;
+                                color: #374151;
+                            }
+                            .timeline-date {
+                                font-size: 0.78rem;
+                                color: #6b7280;
+                                margin-top: 2px;
+                            }
+                            [data-theme="dark"] .timeline-icon { background: #334155; border-color: #1e293b; }
+                            [data-theme="dark"] .timeline-label { color: #e2e8f0; }
+                            [data-theme="dark"] .timeline-steps::before { background: #334155; }
+                        </style>
+
+                        <div class="timeline-wrapper">
+                            <div class="timeline-progress" style="width: {% if application.status == 'pending' %}33%{% elif application.status == 'approved' %}84%{% elif application.status == 'rejected' %}50%{% else %}0%{% endif %};"></div>
+                            <ul class="timeline-steps">
+                                <!-- Step 1: Ariza yuborildi -->
+                                <li class="timeline-step completed">
+                                    <div class="timeline-icon">
+                                        <i class="bi bi-send-fill"></i>
+                                    </div>
+                                    <div class="timeline-label">Ariza yuborildi</div>
+                                    <div class="timeline-date">{{ application.submitted_at|date:'d.m.Y H:i' }}</div>
+                                </li>
+
+                                <!-- Step 2: Ko'rib chiqilmoqda -->
+                                <li class="timeline-step {% if application.status == 'pending' %}active{% elif application.status == 'approved' or application.status == 'rejected' %}completed{% endif %}">
+                                    <div class="timeline-icon">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </div>
+                                    <div class="timeline-label">Ko'rib chiqilmoqda</div>
+                                    <div class="timeline-date">
+                                        {% if application.status == 'pending' %}
+                                            Hozir
+                                        {% elif application.reviewed_at %}
+                                            {{ application.reviewed_at|date:'d.m.Y H:i' }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </div>
+                                </li>
+
+                                <!-- Step 3: Qaror -->
+                                <li class="timeline-step {% if application.status == 'approved' %}completed{% elif application.status == 'rejected' %}rejected{% endif %}">
+                                    <div class="timeline-icon">
+                                        {% if application.status == 'approved' %}
+                                            <i class="bi bi-check-lg"></i>
+                                        {% elif application.status == 'rejected' %}
+                                            <i class="bi bi-x-lg"></i>
+                                        {% else %}
+                                            <i class="bi bi-hourglass-split"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="timeline-label">
+                                        {% if application.status == 'approved' %}
+                                            Qabul qilindi
+                                        {% elif application.status == 'rejected' %}
+                                            Rad etildi
+                                        {% else %}
+                                            Qaror
+                                        {% endif %}
+                                    </div>
+                                    <div class="timeline-date">
+                                        {% if application.reviewed_at %}
+                                            {{ application.reviewed_at|date:'d.m.Y H:i' }}
+                                        {% else %}
+                                            Kutilmoqda
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <dl class="row">
+                        <dt class="col-sm-4">F.I.Sh</dt>
+                        <dd class="col-sm-8">{{ application.full_name }}</dd>
+
+                        <dt class="col-sm-4">Pasport</dt>
+                        <dd class="col-sm-8">{{ application.passport }}</dd>
+
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">{{ application.email }}</dd>
+
+                        <dt class="col-sm-4">Telefon</dt>
+                        <dd class="col-sm-8">{{ application.phone }}</dd>
+
+                        <dt class="col-sm-4">Fakultet</dt>
+                        <dd class="col-sm-8">{{ application.faculty.name|default:'-' }}</dd>
+
+                        <dt class="col-sm-4">Yo'nalish</dt>
+                        <dd class="col-sm-8">{{ application.specialty.name|default:'-' }}</dd>
+
+                        <dt class="col-sm-4">Yuborilgan vaqti</dt>
+                        <dd class="col-sm-8">{{ application.submitted_at|date:'Y-m-d H:i' }}</dd>
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8">
+                            {% if application.status == 'pending' %}
+                                <span class="badge bg-warning">Kutilmoqda</span>
+                            {% elif application.status == 'approved' %}
+                                <span class="badge bg-success">Qabul qilindi</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rad etildi</span>
+                            {% endif %}
+                        </dd>
+
+                        {% if application.reviewed_at %}
+                        <dt class="col-sm-4">Ko'rib chiqilgan</dt>
+                        <dd class="col-sm-8">{{ application.reviewed_at|date:'Y-m-d H:i' }}</dd>
+                        {% endif %}
+
+                        {% if application.reviewed_by %}
+                        <dt class="col-sm-4">Ko'rib chiqqan</dt>
+                        <dd class="col-sm-8">{% if application.reviewed_by.first_name %}{{ application.reviewed_by.first_name }} {{ application.reviewed_by.last_name }}{% else %}{{ application.reviewed_by.username }}{% endif %}</dd>
+                        {% endif %}
+
+                        {% if application.comment %}
+                        <dt class="col-sm-4">Izoh</dt>
+                        <dd class="col-sm-8">{{ application.comment }}</dd>
+                        {% endif %}
+                    </dl>
+
+                    <hr>
+
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Bosh sahifaga
+                        </a>
+                        {% if application.status == 'rejected' %}
+                        <a href="{% url 'submit_application' %}" class="btn btn-success">
+                            <i class="bi bi-plus"></i> Yangi ariza topshirish
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Barcha Foydalanuvchilar - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-people-fill"></i> Barcha Foydalanuvchilar</h4>
+                    <form class="d-flex" method="get">
+                        <input type="hidden" name="source" value="{{ source_filter }}">
+                        <input type="text" name="search" class="form-control form-control-sm me-2"
+                               placeholder="Ism, pasport, telefon..." value="{{ search|default:'' }}">
+                        <select name="status" class="form-select form-select-sm me-2">
+                            <option value="">Barcha holat</option>
+                            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                            <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Qabul qilindi</option>
+                            <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rad etildi</option>
+                        </select>
+                        <button class="btn btn-light btn-sm" type="submit"><i class="bi bi-search"></i></button>
+                    </form>
+                </div>
+
+                <!-- Manba bo'yicha tablar -->
+                <ul class="nav nav-tabs mx-3 mt-3">
+                    <li class="nav-item">
+                        <a class="nav-link {% if source_filter == 'all' %}active{% endif %}"
+                           href="?source=all{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                            <i class="bi bi-people"></i> Barchasi
+                            <span class="badge bg-secondary">{{ total_count }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if source_filter == 'operator' %}active{% endif %}"
+                           href="?source=operator{% if status_filter %}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                            <i class="bi bi-person-plus"></i> Operator qo'shgan
+                            <span class="badge bg-primary">{{ operator_count }}</span>
+                        </a>
+                    </li>
+                    {% comment %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if source_filter == 'self' %}active{% endif %}"
+                           href="?source=self{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                            <i class="bi bi-pencil-square"></i> O'zi ro'yxatdan o'tgan
+                            <span class="badge bg-success">{{ self_count }}</span>
+                        </a>
+                    </li>
+                    {% endcomment %}
+                </ul>
+
+                <div class="card-body table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>F.I.SH</th>
+                                <th>Pasport</th>
+                                <th>Telefon</th>
+                                <th>Fakultet</th>
+                                <th>Yo'nalish</th>
+                                <th>Holat</th>
+                                {# <th>Manba</th> #}
+                                <th>Qo'shgan</th>
+                                <th>Sana</th>
+                                <th>Amal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in records %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><strong>{{ r.full_name }}</strong></td>
+                                <td>{{ r.passport }}</td>
+                                <td>{{ r.phone }}</td>
+                                <td>{{ r.faculty }}</td>
+                                <td>{{ r.specialty }}</td>
+                                <td>
+                                    {% if r.status == 'approved' %}
+                                        <span class="badge bg-success">{{ r.status_display }}</span>
+                                    {% elif r.status == 'rejected' %}
+                                        <span class="badge bg-danger">{{ r.status_display }}</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">{{ r.status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                {# <td> #}
+                                {#     {% if r.source == 'operator' %} #}
+                                {#         <span class="badge bg-primary"><i class="bi bi-person-plus"></i> Operator</span> #}
+                                {#     {% else %} #}
+                                {#         <span class="badge bg-success"><i class="bi bi-pencil-square"></i> O'zi</span> #}
+                                {#     {% endif %} #}
+                                {# </td> #}
+                                <td>{{ r.added_by }}</td>
+                                <td><small class="text-muted">{{ r.submitted_at|date:'Y-m-d H:i' }}</small></td>
+                                <td>
+                                    <a href="{{ r.detail_url }}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> Ko'rish
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="10" class="text-center py-4">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="bi bi-info-circle"></i> Hech qanday yozuv topilmadi.
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include '_pagination.html' with page_obj=records %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

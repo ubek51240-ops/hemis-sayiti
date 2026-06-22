@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arizangiz Qabul Qilindi</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 12px 12px; }
+        .success-icon { font-size: 48px; margin-bottom: 15px; }
+        .details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981; }
+        .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+        .btn { display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="success-icon">✅</div>
+        <h1>Arizangiz Qabul Qilindi!</h1>
+    </div>
+    <div class="content">
+        <p>Assalomu alaykum, <strong>{{ application.full_name }}</strong>!</p>
+        <p>Sizning arizangiz muvaffaqiyatli ko'rib chiqildi va <strong>qabul qilindi</strong>.</p>
+        
+        <div class="details">
+            <h3>Ariza Ma'lumotlari:</h3>
+            <p><strong>Pasport:</strong> {{ application.passport }}</p>
+            <p><strong>Fakultet:</strong> {{ application.faculty.name|default:"-" }}</p>
+            <p><strong>Yo'nalish:</strong> {{ application.specialty.name|default:"-" }}</p>
+            <p><strong>Yuborilgan:</strong> {{ application.submitted_at|date:"d.m.Y H:i" }}</p>
+            <p><strong>Tasdiqlangan:</strong> {{ application.reviewed_at|date:"d.m.Y H:i" }}</p>
+        </div>
+        
+        {% if application.comment %}
+        <p><strong>Izoh:</strong> {{ application.comment }}</p>
+        {% endif %}
+        
+        <p>Batafsil ma'lumot uchun tizimga kiring:</p>
+        <a href="{{ site_url }}" class="btn">Tizimga Kirish</a>
+        
+        <div class="footer">
+            <p>© {{ year }} Test-sinov-ucun. Bu xat avtomatik yuborildi.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}BUxgalteriya - Tasdiqlangan Talabalar{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4><i class="bi bi-cash-coin"></i> Tasdiqlangan Talabalar - To'lovlar</h4>
+        <span class="badge bg-success">{{ students|length }} ta talaba</span>
+    </div>
+    <div class="card-body">
+        <!-- Filter and Search -->
+        <form method="get" class="row mb-4">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="Qidirish (FIO, pasport, HEMIS ID)..." value="{{ search|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <select name="faculty" class="form-control">
+                    <option value="">Barcha fakultetlar</option>
+                    {% for faculty in faculties %}
+                    <option value="{{ faculty.id }}" {% if faculty_id == faculty.id|stringformat:"s" %}selected{% endif %}>{{ faculty.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Qidirish
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'accountant_dashboard' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-x-circle"></i> Tozalash
+                </a>
+            </div>
+        </form>
+
+        <!-- Students Table -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>FIO</th>
+                        <th>Pasport</th>
+                        <th>HEMIS ID</th>
+                        <th>Fakultet</th>
+                        <th>Mutaxassislik</th>
+                        <th>To'lovlar</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ student.full_name }}</strong></td>
+                        <td>{{ student.passport }}</td>
+                        <td>
+                            {% if student.hemis_id %}
+                                <span class="badge bg-success">{{ student.hemis_id }}</span>
+                            {% else %}
+                                <span class="badge bg-dark">Yo'q</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ student.faculty.name|truncatewords:3 }}</td>
+                        <td>{{ student.specialty.name|truncatewords:3 }}</td>
+                        <td>
+                            {% with total=student.payments.all|length %}
+                                {% if total > 0 %}
+                                    <span class="badge bg-info">{{ total }} ta to'lov</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">To'lov yo'q</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            <a href="{% url 'add_payment' student.id %}" class="btn btn-sm btn-success">
+                                <i class="bi bi-plus-circle"></i> To'lov qo'shish
+                            </a>
+                            <a href="{% url 'view_payments' student.id %}" class="btn btn-sm btn-info">
+                                <i class="bi bi-eye"></i> Ko'rish
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+                            <p class="mt-2 text-muted">Tasdiqlangan talabalar topilmadi</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

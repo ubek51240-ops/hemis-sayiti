@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% block title %}Chat - {{ other_user.username }} - Test-sinov-ucun{% endblock %}
+{% block extra_css %}
+<style>
+.sticker-picker {
+    display: none;
+    position: absolute;
+    bottom: 70px;
+    right: 20px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+.sticker-picker.show {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+.sticker-btn {
+    font-size: 1.5rem;
+    padding: 5px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.sticker-btn:hover {
+    transform: scale(1.2);
+}
+.message-edited {
+    font-size: 0.7rem;
+    color: #999;
+    font-style: italic;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-chat-dots"></i> 
+                    Chat: {{ other_user.username }}
+                    <small class="text-white">({{ other_user.profile.get_role_display }})</small>
+                </h5>
+                <a href="{% url 'chat_list' %}" class="btn btn-sm btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Orqaga
+                </a>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div class="card-body" style="max-height: 500px; overflow-y: auto;" id="chatBody">
+                {% for message in messages %}
+                <div class="d-flex {% if message.sender == user %}justify-content-end{% else %}justify-content-start{% endif %} mb-3 message-container" 
+                     data-message-id="{{ message.id }}">
+                    
+                    <div class="card {% if message.sender == user %}bg-primary text-white{% else %}bg-light{% endif %} {% if message.is_deleted %}opacity-50{% endif %}" 
+                         style="max-width: 70%; position: relative;">
+                        
+                        <div class="card-body">
+                            {% if message.is_deleted %}
+                            <p class="card-text mb-1 text-muted"><em>{{ message.message }}</em></p>
+                            {% else %}
+                            <p class="card-text mb-1">{{ message.message|linebreaks }}</p>
+                            {% endif %}
+                            
+                                                        
+                            <small class="{% if message.sender == user %}text-white{% else %}text-muted{% endif %}">
+                                {{ message.created_at|date:"d.m.Y H:i" }}
+                                {% if message.edited_at %}
+                                <span class="message-edited"> (tahrirlangan)</span>
+                                {% endif %}
+                                {% if message.sender == user %}
+                                    {% if message.is_read %}✅{% else %}⏳{% endif %}
+                                {% endif %}
+                            </small>
+                        </div>
+                        
+                        <!-- Message Actions -->
+                        {% if message.sender == user and not message.is_deleted %}
+                        <div class="card-footer bg-transparent border-0 d-flex gap-2">
+                            <button class="btn btn-sm btn-link {% if message.sender == user %}text-white{% else %}text-danger{% endif %}" 
+                                    onclick="editMessage({{ message.id }})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <a href="{% url 'delete_chat_message' message.id %}" 
+                               class="btn btn-sm btn-link {% if message.sender == user %}text-white{% else %}text-danger{% endif %}"
+                               onclick="return confirm('O\'chirmoqchimisiz?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-chat-quote" style="font-size: 3rem;"></i>
+                    <p class="mt-3">Hali xabarlar yo'q. Birinchi xabarni yozing!</p>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="card-footer">
+                <!-- Sticker Picker -->
+                <div class="sticker-picker" id="stickerPicker">
+                    <button class="sticker-btn" onclick="sendSticker('👍')">👍</button>
+                    <button class="sticker-btn" onclick="sendSticker('❤️')">❤️</button>
+                    <button class="sticker-btn" onclick="sendSticker('😂')">😂</button>
+                    <button class="sticker-btn" onclick="sendSticker('😮')">😮</button>
+                    <button class="sticker-btn" onclick="sendSticker('😢')">😢</button>
+                    <button class="sticker-btn" onclick="sendSticker('😡')">😡</button>
+                    <button class="sticker-btn" onclick="sendSticker('🎉')">🎉</button>
+                    <button class="sticker-btn" onclick="sendSticker('🔥')">🔥</button>
+                    <button class="sticker-btn" onclick="sendSticker('✨')">✨</button>
+                    <button class="sticker-btn" onclick="sendSticker('👀')">👀</button>
+                    <button class="sticker-btn" onclick="sendSticker('💯')">💯</button>
+                    <button class="sticker-btn" onclick="sendSticker('🙏')">🙏</button>
+                </div>
+                
+                <form method="post" id="chatForm">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        {{ form.message }}
+                        <button type="button" class="btn btn-outline-secondary" onclick="toggleStickerPicker()">
+                            <i class="bi bi-emoji-smile"></i>
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Yuborish
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Message Modal -->
+<div class="modal fade" id="editMessageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xabarni Tahrirlash</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editMessageForm" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <textarea class="form-control" name="message" id="editMessageText" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                    <button type="submit" class="btn btn-primary">Saqlash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto scroll to bottom
+const chatBody = document.getElementById('chatBody');
+if (chatBody) {
+    chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+// Sticker picker
+function toggleStickerPicker() {
+    document.getElementById('stickerPicker').classList.toggle('show');
+}
+
+function sendSticker(sticker) {
+    document.getElementById('id_message').value = sticker;
+    document.getElementById('chatForm').submit();
+}
+
+
+
+// Edit message
+function editMessage(messageId) {
+    document.getElementById('editMessageForm').action = '/chat/message/' + messageId + '/edit/';
+    document.getElementById('editMessageModal').querySelector('textarea').value = 
+        document.querySelector('[data-message-id="' + messageId + '"] .card-text').innerText;
+    new bootstrap.Modal(document.getElementById('editMessageModal')).show();
+}
+</script>
+{% endblock %}

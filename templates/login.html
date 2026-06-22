@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}Kirish - Test-sinov-ucun{% endblock %}
+{% block content %}
+
+<style>
+    .login-logo-section {
+        text-align: center;
+        padding: 20px;
+    }
+    .login-logo-section {
+        text-align: center;
+        padding: 20px;
+    }
+    .login-logo-section img {
+        max-width: 120px;
+        max-height: 120px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .login-logo-section i {
+        font-size: 4rem;
+        color: #0d6efd;
+    }
+    .info-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        transition: transform 0.2s;
+    }
+    .info-card:hover {
+        transform: translateY(-2px);
+    }
+    .info-card .card-header {
+        border-radius: 12px 12px 0 0;
+        font-weight: 600;
+    }
+</style>
+<div class="row justify-content-center mt-4">
+    <!-- CHAP TOMON: Universitet haqida ma'lumotlar -->
+    <div class="col-lg-7 col-md-6 mb-4">
+        <!-- Logo va sarlavha -->
+        <div class="login-logo-section mb-4">
+            {% if login_page_content and login_page_content.logo %}
+                <img src="{{ login_page_content.logo.url }}" alt="Logo">
+            {% elif 'site_logo' in request.session %}
+                <img src="{{ request.session.site_logo }}" alt="Logo">
+            {% else %}
+                <i class="bi bi-building"></i>
+            {% endif %}
+            <h2 class="mt-3 fw-bold text-primary">{% if login_page_content and login_page_content.title %}{{ login_page_content.title }}{% else %}Test-sinov-ucun{% endif %}</h2>
+            <p class="text-muted lead">{% if login_page_content and login_page_content.subtitle %}{{ login_page_content.subtitle }}{% else %}Talaba Boshqaruv Tizimi{% endif %}</p>
+        </div>
+
+        {% comment "Vaqtincha olib qo'yilgan (Universitet haqida va Yo'nalishlar)" %}
+        <!-- Universitet haqida -->
+        {% if login_page_content and login_page_content.about_text %}
+        <div class="card info-card mb-3">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-info-circle"></i> Universitet haqida
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ login_page_content.about_text|linebreaks }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Yo'nalishlar -->
+        {% if login_page_content and login_page_content.directions %}
+        <div class="card info-card mb-3">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-mortarboard"></i> Yo'nalishlar
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ login_page_content.directions|linebreaks }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Agar ma'lumot kiritilmagan bo'lsa -->
+        {% if not login_page_content or not login_page_content.about_text and not login_page_content.directions %}
+        <div class="card info-card">
+            <div class="card-body text-center text-muted">
+                <i class="bi bi-info-circle" style="font-size: 2rem;"></i>
+                <p class="mt-2 mb-0">Universitet haqida ma'lumot tez orada qo'shiladi.</p>
+            </div>
+        </div>
+        {% endif %}
+        {% endcomment %}
+    </div>
+
+    <!-- O'NG TOMON: Login forma -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4><i class="bi bi-lock"></i> Tizimga Kirish</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label" for="username"><i class="bi bi-person"></i> Login</label>
+                        <input type="text" name="username" id="username" class="form-control" required autofocus autocomplete="username">
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <label class="form-label" for="password"><i class="bi bi-key"></i> Parol</label>
+                        </div>
+                        <input type="password" name="password" id="password" class="form-control" required autocomplete="current-password">
+                    </div>
+                    
+                    <div class="mb-3 text-center">
+                        <a href="{% url 'forgot_password' %}" class="text-decoration-none">
+                            <i class="bi bi-question-circle"></i> Parolni unutdim
+                        </a>
+                    </div>
+                    
+                    <!-- Matematik Captcha -->
+                    {% if captcha %}
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-calculator"></i> Matematik misolni yeching</label>
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title mb-3">{{ captcha.question }} = ?</h5>
+                                <input type="number" name="captcha_answer" class="form-control" placeholder="Javobni kiriting" required>
+                                <input type="hidden" name="captcha_correct" value="{{ captcha.answer }}">
+                                <small class="text-muted">Iltimos, yuqoridagi misolning javobini kiriting</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Kirish
+                    </button>
+                </form>
+                
+                <hr>
+
+                <div class="text-center">
+                    <p class="mb-2">Hisobingiz yo'qmi?</p>
+                    <div class="d-grid gap-2">
+                        {% comment %}
+                        <a href="{% url 'register_student' %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-mortarboard"></i> Talaba sifatida ro'yxatdan o'tish
+                        </a>
+                        {% endcomment %}
+                        <a href="{% url 'register_employee' %}" class="btn btn-success btn-sm">
+                            <i class="bi bi-briefcase"></i> Xodim sifatida ro'yxatdan o'tish
+                        </a>
+                    </div>
+                    <small class="text-muted mt-2 d-block">
+                        <i class="bi bi-info-circle"></i>
+                        {% comment %}<strong>Talaba</strong> - O'qishga kirish uchun |{% endcomment %}
+                        <strong>Xodim</strong> - Tizimda rol olish uchun
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

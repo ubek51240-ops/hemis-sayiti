@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Operatorlar Reytingi - Test-sinov-ucun{% endblock %}
+{% block content %}
+<h2><i class="bi bi-trophy"></i> Eng Yaxshi Operatorlar</h2>
+<hr>
+
+<div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+        <h5><i class="bi bi-funnel"></i> Davr Bo'yicha Filtrlash</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Oy</label>
+                <select name="month" class="form-control">
+                    <option value="">Barcha oylar</option>
+                    {% for m_id, m_name in months %}
+                    <option value="{{ m_id }}" {% if month == m_id|stringformat:"s" %}selected{% endif %}>
+                        {{ m_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Yil</label>
+                <input type="number" name="year" class="form-control" value="{{ year }}" min="2020" max="2030">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Ko'rish
+                </button>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <a href="{% url 'operator_ranking' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-x-circle"></i> Tozalash
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5><i class="bi bi-bar-chart-line"></i> Operatorlar Reytingi</h5>
+    </div>
+    <div class="card-body">
+        {% if ranking %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>🏆 O'rin</th>
+                        <th>👤 Operator</th>
+                        <th>📊 Jami</th>
+                        <th class="text-success">✅ Tasdiqlangan</th>
+                        <th class="text-danger">❌ Rad Etilgan</th>
+                        <th class="text-warning">⏳ Kutilmoqda</th>
+                        <th>📈 Foiz (Tasdiq)</th>
+                        <th>🎯 Ball</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in ranking %}
+                    <tr class="{% if forloop.counter <= 3 %}table-warning{% endif %}">
+                        <td class="text-center" style="font-size: 1.5rem;">
+                            {{ item.medal|default:forloop.counter }}
+                        </td>
+                        <td><strong>{{ item.operator.username }}</strong></td>
+                        <td><strong>{{ item.total }}</strong></td>
+                        <td class="text-success"><strong>{{ item.approved }}</strong></td>
+                        <td class="text-danger"><strong>{{ item.rejected }}</strong></td>
+                        <td class="text-warning"><strong>{{ item.pending }}</strong></td>
+                        <td>
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ item.approval_rate|floatformat:0 }}%;">
+                                    {{ item.approval_rate|floatformat:1 }}%
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-primary" style="font-size: 1.2rem;">{{ item.score }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+            <i class="bi bi-info-circle"></i> 
+            <strong>Reyting qanday hisoblanadi?</strong><br>
+            Ball = (Tasdiqlangan × 2) + (Jami × 1)
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Operatorlar topilmadi
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Orqaga
+    </a>
+</div>
+{% endblock %}

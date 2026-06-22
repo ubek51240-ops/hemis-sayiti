@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}{{ edit_user.username }} - Tahrirlash - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4><i class="bi bi-pencil"></i> Foydalanuvchini Tahrirlash: {{ edit_user.username }}</h4>
+            </div>
+            <div class="card-body">
+                <!-- User Info Form -->
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_info">
+                    
+                    <h5 class="mb-3"><i class="bi bi-person-lines-fill"></i> Asosiy Ma'lumotlar</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label"><i class="bi bi-person"></i> Ism</label>
+                                <input type="text" name="first_name" class="form-control" value="{{ edit_user.first_name|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label"><i class="bi bi-person"></i> Familiya</label>
+                                <input type="text" name="last_name" class="form-control" value="{{ edit_user.last_name|default:'' }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-envelope"></i> Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ edit_user.email|default:'' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-telephone"></i> Telefon</label>
+                        <input type="text" name="phone" class="form-control" value="{{ edit_user.profile.phone|default:'' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-person-badge"></i> Huquqiy Rollar (bir nechta tanlash mumkin)</label>
+                        <div class="border rounded p-3 bg-dark">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="roles" value="super_admin" id="role_super_admin"
+                                    {% if 'super_admin' in edit_user.profile.get_all_roles %}checked{% endif %}>
+                                <label class="form-check-label" for="role_super_admin">
+                                    <span class="badge bg-danger">Super Admin</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="roles" value="admin" id="role_admin"
+                                    {% if 'admin' in edit_user.profile.get_all_roles %}checked{% endif %}>
+                                <label class="form-check-label" for="role_admin">
+                                    <span class="badge bg-warning text-dark">Admin</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="roles" value="operator" id="role_operator"
+                                    {% if 'operator' in edit_user.profile.get_all_roles %}checked{% endif %}>
+                                <label class="form-check-label" for="role_operator">
+                                    <span class="badge bg-primary">Operator (Talaba Qo\'shuvchi)</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="roles" value="hemis_id_adder" id="role_hemis_id_adder"
+                                    {% if 'hemis_id_adder' in edit_user.profile.get_all_roles %}checked{% endif %}>
+                                <label class="form-check-label" for="role_hemis_id_adder">
+                                    <span class="badge bg-info">HEMIS ID Qo\'shuvchi</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="roles" value="talaba_viewer" id="role_talaba_viewer"
+                                    {% if 'talaba_viewer' in edit_user.profile.get_all_roles %}checked{% endif %}>
+                                <label class="form-check-label" for="role_talaba_viewer">
+                                    <span class="badge bg-secondary">Talaba Ko\'ruvchi</span>
+                                </label>
+                            {# Arxiv va Buxgalter rollari vaqtincha o'chirildi #}
+                            {# <div class="form-check"> #}
+                            {#     <input class="form-check-input" type="checkbox" name="roles" value="archive" id="role_archive" #}
+                            {#         {% if 'archive' in edit_user.profile.get_all_roles %}checked{% endif %}> #}
+                            {#     <label class="form-check-label" for="role_archive"> #}
+                            {#         <span class="badge bg-dark">Arxiv</span> #}
+                            {#     </label> #}
+                            {# </div> #}
+                            {# <div class="form-check"> #}
+                            {#     <input class="form-check-input" type="checkbox" name="roles" value="accountant" id="role_accountant" #}
+                            {#         {% if 'accountant' in edit_user.profile.get_all_roles %}checked{% endif %}> #}
+                            {#     <label class="form-check-label" for="role_accountant"> #}
+                            {#         <span class="badge bg-success">BUxgalteriya</span> #}
+                            {#     </label> #}
+                            {# </div> #}
+                        </div>
+                        <small class="form-text text-muted">Kamida bitta rol tanlang. Bir nechta rollarni tanlash mumkin.</small>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'manage_users' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Orqaga
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle"></i> Saqlash
+                        </button>
+                    </div>
+                </form>
+                
+                <hr>
+                
+                <!-- Password Reset Form -->
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="reset_password">
+                    
+                    <h5 class="mb-3"><i class="bi bi-key"></i> Parolni O'zgartirish</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Yangi Parol</label>
+                        <input type="password" name="new_password" class="form-control" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-info">
+                        <i class="bi bi-key-fill"></i> Parolni O'zgartirish
+                    </button>
+                </form>
+                
+                <hr>
+                
+                <!-- Delete User Form -->
+                <form method="post" onsubmit="return confirm('Haqiqatan ham bu foydalanuvchini o\'chirmoqchimisiz?')">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_user">
+                    
+                    <h5 class="mb-3 text-danger"><i class="bi bi-trash"></i> Xavfli Zona</h5>
+                    
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Foydalanuvchini O'chirish
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="bi bi-info-circle"></i> Ma'lumotlar</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Login:</strong> {{ edit_user.username }}</p>
+                <p><strong>Ro'yxatdan o'tgan:</strong> {{ edit_user.date_joined|date:"d.m.Y H:i" }}</p>
+                <p><strong>So'ngi login:</strong> {{ edit_user.last_login|date:"d.m.Y H:i"|default:"Noma'lum" }}</p>
+                <p><strong>Rollari:</strong><br>
+                    {% for role_display in edit_user.profile.get_roles_display %}
+                        <span class="badge 
+                            {% if 'Super' in role_display %}bg-danger
+                            {% elif 'Admin' in role_display %}bg-warning text-dark
+                            {% elif 'Operator' in role_display %}bg-primary
+                            {% elif 'HEMIS' in role_display %}bg-info
+                            {% elif 'Ko\'ruvchi' in role_display %}bg-secondary
+                            {% elif 'BUxgalter' in role_display %}bg-success
+                            {% else %}bg-dark{% endif %}
+                        ">{{ role_display }}</span>
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

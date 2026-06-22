@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Hisob Bloklandi - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-danger">
+            <div class="card-header bg-danger text-white text-center">
+                <h4><i class="bi bi-lock"></i> Hisob Vaqtincha Bloklandi</h4>
+            </div>
+            <div class="card-body text-center py-5">
+                <i class="bi bi-shield-lock text-danger" style="font-size: 5rem;"></i>
+                <h5 class="mt-4">Xavfsizlik sababli bloklandi</h5>
+                <p class="text-muted">
+                    Ko'p marta noto'g'ri parol kiritildi.<br>
+                    Hisobingiz <strong>15 daqiqa</strong> davomida bloklandi.
+                </p>
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Eslatma:</strong> Bu avtomatik xavfsizlik chorasi.
+                </div>
+                <div class="mt-4">
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-clockwise"></i> Qayta Urinish
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

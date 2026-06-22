@@ -1,0 +1,20 @@
+=== MINI HEMIS INTERNETGA OCHISH - TEZ START ===
+
+1. Django server ishga tushiring (1-terminal):
+   cd /home/riva/Desktop/mini_hemis
+   venv/bin/python manage.py runserver 0.0.0.0:8000
+
+2. Internet setup script ni ishga tushiring (2-terminal):
+   cd /home/riva/Desktop/mini_hemis
+   ./setup_internet.sh
+
+3. Agar authtoken so'rasa:
+   - https://ngrok.com ga kirib ro'yxatdan o'ting
+   - Dashboarddan authtoken oling
+   - ./ngrok authtoken YOUR_TOKEN_HERE
+   - Qaytadan ./setup_internet.sh ni ishga tushiring
+
+4. Ngrok sizga https://xxxxx.ngrok.io beradi
+   Bu URL orqali istalgan joydan saytingizga kiring!
+
+MUVAFFAQIYAT! Endi saytingiz internetdan ochiq!

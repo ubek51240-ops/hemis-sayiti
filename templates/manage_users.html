@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block title %}Foydalanuvchilar Boshqaruvi - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4><i class="bi bi-people"></i> Foydalanuvchilar Boshqaruvi</h4>
+        <a href="/admin/auth/user/add/" class="btn btn-success" target="_blank">
+            <i class="bi bi-person-plus"></i> Yangi Foydalanuvchi
+        </a>
+    </div>
+
+    <!-- Tablar: Barchasi, Talabalar, Xodimlar, Staff -->
+    <ul class="nav nav-tabs mx-3 mt-3">
+        <li class="nav-item">
+            <a class="nav-link {% if user_type == 'all' %}active{% endif %}" href="?type=all{% if role_filter %}&role={{ role_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                <i class="bi bi-people"></i> Barchasi
+                <span class="badge bg-secondary">{{ total_count }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if user_type == 'student' %}active{% endif %}" href="?type=student{% if role_filter %}&role={{ role_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                <i class="bi bi-mortarboard"></i> Talabalar
+                <span class="badge bg-primary">{{ student_count }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if user_type == 'employee' %}active{% endif %}" href="?type=employee{% if role_filter %}&role={{ role_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                <i class="bi bi-briefcase"></i> Xodimlar (Rol olish uchun)
+                <span class="badge bg-success">{{ employee_count }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if user_type == 'staff' %}active{% endif %}" href="?type=staff{% if role_filter %}&role={{ role_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                <i class="bi bi-building"></i> Xodimlar (Tizimda ishlaydigan)
+                <span class="badge bg-warning text-dark">{{ staff_count }}</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="card-body">
+        <!-- Filter and Search -->
+        <form method="get" class="row mb-3">
+            <input type="hidden" name="type" value="{{ user_type }}">
+            <div class="col-md-3">
+                <select name="role" class="form-control">
+                    <option value="">Barcha huquqiy rollar</option>
+                    <option value="super_admin" {% if role_filter == 'super_admin' %}selected{% endif %}>Super Admin</option>
+                    <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admin</option>
+                    <option value="operator" {% if role_filter == 'operator' %}selected{% endif %}>Operator</option>
+                    <option value="hemis_id_adder" {% if role_filter == 'hemis_id_adder' %}selected{% endif %}>HEMIS ID Qo\'shuvchi</option>
+                    {# <option value="accountant" {% if role_filter == 'accountant' %}selected{% endif %}>BUxgalter</option> #}
+                    <option value="talaba_viewer" {% if role_filter == 'talaba_viewer' %}selected{% endif %}>Talaba Ko\'ruvchi</option>
+                    {# <option value="archive" {% if role_filter == 'archive' %}selected{% endif %}>Arxiv</option> #}
+                    <option value="student" {% if role_filter == 'student' %}selected{% endif %}>Talaba</option>
+                    <option value="employee" {% if role_filter == 'employee' %}selected{% endif %}>Xodim (Rol olish uchun)</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <input type="text" name="search" class="form-control" placeholder="Qidirish..." value="{{ search|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Qidirish
+                </button>
+            </div>
+        </form>
+
+        <!-- Users Table -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Login</th>
+                        <th>Huquqiy Rollar</th>
+                        <th>Tashkiliy Rol</th>
+                        <th>Telefon</th>
+                        <th>Email</th>
+                        <th>Qo'shilgan</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <strong>{{ u.username }}</strong>
+                            {% if u.is_superuser %}
+                                <span class="badge bg-danger">Django Admin</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% for role in u.profile.get_all_roles %}
+                                {% if role == 'super_admin' %}
+                                    <span class="badge bg-danger">Super Admin</span>
+                                {% elif role == 'admin' %}
+                                    <span class="badge bg-warning text-dark">Admin</span>
+                                {% elif role == 'operator' %}
+                                    <span class="badge bg-primary">Operator</span>
+                                {% elif role == 'hemis_id_adder' %}
+                                    <span class="badge bg-info">HEMIS ID</span>
+                                {% elif role == 'accountant' %}
+                                    <span class="badge bg-success">BUxgalter</span>
+                                {% elif role == 'talaba_viewer' %}
+                                    <span class="badge bg-secondary">Ko'ruvchi</span>
+                                {% elif role == 'archive' %}
+                                    <span class="badge bg-dark">Arxiv</span>
+                                {% elif role == 'student' %}
+                                    <span class="badge bg-primary">Talaba</span>
+                                {% elif role == 'employee' %}
+                                    <span class="badge bg-success">Xodim (Rol olish uchun)</span>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if u.profile.organizational_role %}
+                                <span class="badge bg-info">{{ u.profile.get_organizational_role_display }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.profile.phone|default:"-" }}</td>
+                        <td>{{ u.email|default:"-" }}</td>
+                        <td>{{ u.date_joined|date:"d.m.Y" }}</td>
+                        <td>
+                            <a href="{% url 'edit_user' u.id %}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            {% if user_type == 'student' %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Talabalar topilmadi.
+                                </div>
+                            {% elif user_type == 'employee' %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Xodimlar (rol olish uchun) topilmadi.
+                                </div>
+                            {% elif user_type == 'staff' %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Tizim xodimlari topilmadi.
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Foydalanuvchilar topilmadi.
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

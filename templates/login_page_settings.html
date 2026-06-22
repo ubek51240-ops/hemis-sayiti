@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Kirish Sahifasi Sozlamalari - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="bi bi-pencil-square"></i> Kirish Sahifasi Sozlamalari</h4>
+                <p class="mb-0">Universitet logotipi, universitet haqida ma'lumot va yo'nalishlar matnini o'zgartiring.</p>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Sarlavha</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="text-danger mt-1">{{ form.title.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Kichik sarlavha</label>
+                        {{ form.subtitle }}
+                        {% if form.subtitle.errors %}
+                        <div class="text-danger mt-1">{{ form.subtitle.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Universitet haqida ma'lumot</label>
+                        {{ form.about_text }}
+                        {% if form.about_text.errors %}
+                        <div class="text-danger mt-1">{{ form.about_text.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Yo'nalishlar</label>
+                        {{ form.directions }}
+                        {% if form.directions.errors %}
+                        <div class="text-danger mt-1">{{ form.directions.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Logotip</label>
+                        {{ form.logo }}
+                        {% if form.logo.errors %}
+                        <div class="text-danger mt-1">{{ form.logo.errors.0 }}</div>
+                        {% endif %}
+                        {% if content and content.logo %}
+                        <div class="mt-2">
+                            <img src="{{ content.logo.url }}" alt="Faol logotip" class="img-fluid rounded" style="max-height: 150px;">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label">Faol qilish</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Saqlash
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary ms-2">
+                        <i class="bi bi-arrow-left"></i> Orqaga
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,693 @@
+
+# 2026-05-22 14:05:34.646556
++y
+
+# 2026-05-22 14:06:01.015515
++cd /home/riva/Desktop/mini_hemisShu fayldagi kodni tekshirib, xatolari yoki kamchiliklarini topib ber va qanday optimallashtirish mumkinligini ayt
+
+# 2026-05-22 14:09:18.488382
++y
+
+# 2026-05-22 14:09:39.310627
++shu papkadagi kodlarni ko'rib chiqib xatolarni topib ber
+
+# 2026-05-22 14:18:09.386553
++manage.py shu kodni xatolarini aniqla
+
+# 2026-05-22 14:18:11.305870
++y
+
+# 2026-05-22 14:44:12.719196
++/home/riva/Desktop/mini_hemis  shu saytni kodlarini ko'rib chiq
+
+# 2026-05-22 14:46:53.292693
++y
+
+# 2026-05-22 14:47:02.724621
++papkadagi kodlarni ko'rib chiq
+
+# 2026-05-22 14:48:29.976457
++qara papkadagi fayllarni ko'rib xatolarni topib ber
+
+# 2026-05-22 14:54:13.599982
++yy
+
+# 2026-05-22 14:54:15.058422
++y
+
+# 2026-06-06 15:08:54.918948
++/add core/api/v1/urls.py core/api/v1/views.py core/api/v1/serializers.py core/management/commands/unlock_user.py security_scanner.py
+
+# 2026-06-06 15:09:34.052393
++Men loyihadagi barcha asosiy mantiqiy fayllarni chatga qo'shdim. Loyihaning umumiy xaritasini (Repository Map) hamda chatdagi fayllarni tahlil qilib, butun tizim uchun to'liq xavfsizlik va optimizatsiya auditini o'tkazib ber:
++
++1. XAVFSIZLIK (Security):
++   - Barcha API yo'nalishlari (core/api/v1/) to'g'ri himoyalanganmi? Login qilmagan yoki begona foydalanuvchilar (masalan, oddiy talabalar) boshqalarning ma'lumotlarini o'qishi yoki o'zgartirishi mumkin bo'lgan zaifliklar (IdOR, Broken Object Level Authentication) bormi?
++   - complete_settings.py ichida production (jonli efir) uchun xavfli sozlamalar qolib ketganmi?
++   - security_scanner.py skripti tizimni to'liq himoya qila olyaptimi?
++
++2. LOGIKA VA OPTIMIZATSIYA:
++   - core/views.py va api/v1/views.py ichida ma'lumotlar bazasiga og'ir so'rovlar yuborilayotgan (N+1 muammosi bor) joylar bormi? select_related yoki prefetch_related ishlatish kerakmi?
++   - Excel yuklash va qayta ishlash so'rovlari (ExcelDownloadRequest) bazani qulflab qo'ymaydimi? Bu jarayonni qanday optimizatsiya qilish mumkin?
++
++3. CHALKASHLIKLAR:
++   - Proyekt papkasidagi complete_urls.py va core/urls.py o'rtasida takrorlanishlar yoki bir-biriga xalaqit beradigan marshrutlar yo'qmi?
++
++Har bir aniqlangan muammoni qaysi faylda ekanligini ko'rsatib, tuzatish kodlarini aniq va tushunarli qilib yozib ber.
+
+# 2026-06-06 15:09:37.544998
++y
+
+# 2026-06-06 15:26:52.092936
++/run python security_scanner.py
+
+# 2026-06-06 15:26:52.093045
++/run python security_scanner.py
+
+# 2026-06-06 15:27:10.757281
++y
+
+# 2026-06-06 15:27:35.160397
++/add security_scan_report.md
+
+# 2026-06-06 15:27:51.464032
++Skaner tomonidan olingan security_scan_report.mdxususiyat hisobotini o'qib chiqishi kerak. Kodda yana qanday zararlar yoki zarari aniqlandi va ularni olish uchun qaysi fayllarga o' aniqlanishimiz kerak?"
+
+# 2026-06-06 15:28:58.952407
++y
+
+# 2026-06-06 15:33:02.514862
++/add security_scan_report.md
+
+# 2026-06-06 15:33:30.314844
++Skaner tomonidan aniqlangan va `security_scan_report.md` ichida yozilgan barcha static xavfsizlik kamchiliklarini (masalan, xavfli funksiyalar, eski shablonlar yoki boshqa zaif nuqtalar) to'liq o'qib chiq. Biz boya `core/middleware.py` ni to'g'riladik, endi hisobotda qolgan boshqa barcha zaifliklarni bartaraf etish uchun tegishli fayllarga (masalan, views.py, settings.py yoki boshqa skriptlarga) kerakli SEARCH/REPLACE bloklarini tayyorlab, kodni avtomatik yangila.
+
+# 2026-06-06 15:33:32.641505
++y
+
+# 2026-06-06 15:37:45.930013
++!python security_scanner.py
+
+# 2026-06-06 15:37:50.537833
++y
+
+# 2026-06-06 15:38:20.635436
++Yangi skanerlash natijasida yangilangan `security_scan_report.md` hisobotini qaytadan to'liq o'qib chiq. Sozlamalardan tashqari, views.py, urls.py yoki serializers.py ichida static tahlil aniqlagan barcha kamchiliklarni oxirigacha bartaraf etish uchun kerakli SEARCH/REPLACE bloklarini tayyorla va kodni yangila. Loyihani 100% toza va xavfsiz holatga keltiraylik.
+
+# 2026-06-06 15:38:23.049470
++y
+
+# 2026-06-06 16:17:59.947802
++/run python security_scanner.py
+
+# 2026-06-06 16:17:59.947937
++/run python security_scanner.py
+
+# 2026-06-06 16:18:01.731494
++y
+
+# 2026-06-06 16:19:30.828047
++`mini_hemis/settings.py` va `complete_settings.py` fayllarini ochib, `ALLOWED_HOSTS` ro'yxatiga '0.0.0.0', '127.0.0.1' va 'localhost' qiymatlarini qo'shib qo'y.
+
+# 2026-06-06 16:19:34.251079
++y
+
+# 2026-06-06 16:21:23.341408
++Ushbu dropdown menyuning qora fonga oq matn bo'lib qolgan muammosini tuzatish kerak. Ranglar och fonda chiroyli ko'rinishi uchun `dropdown-menu` klassiga ega bo'lgan `<ul>` teginining klasslarini quyidagicha yangila:
++
++```html
++<ul class="dropdown-menu dropdown-menu-end bg-white border shadow-sm" data-bs-popper="static">
+
+# 2026-06-06 16:21:26.338851
++y
+
+# 2026-06-06 16:39:50.479225
++Loyihaga jonli efir (Kamera/Mikrofon) va real-vaqtda ishlaydigan jonli chat funksiyasini qo'shishimiz kerak. Buning uchun quyidagi ishlarni amalga oshir:
++
++1. YANGL KUTUBXONALAR:
++   - `requirements.txt` fayliga `channels` va `channels-redis` (WebSocket uchun) kutubxonalarini qo'sh.
++
++2. SOZLAMALAR (`mini_hemis/settings.py` va `complete_settings.py`):
++   - `INSTALLED_APPS` ichiga 'channels' ni qo'sh.
++   - ASGI server sozlamasini (`ASGI_APPLICATION = 'mini_hemis.asgi.application'`) sozla.
++   - Quyidagicha vaqtinchalik xotira (In-Memory) Channel Layer sozlamasini qo'sh (Redis hozircha shart bo'lmasligi uchun):
++     CHANNEL_LAYERS = {
++         "default": {
++             "BACKEND": "channels.layers.InMemoryChannelLayer",
++         },
++     }
++
++3. CHAT LOGIKASI (WebSockets):
++   - `core/consumers.py` faylini yarat va u yerda `AsyncWebsocketConsumer` orqali guruhli chat xabarlarini qabul qiladigan va barcha tomoshabinlarga tarqatadigan xonalar (Room) logikasini yoz.
++   - `core/routing.py` faylini yaratib, websocket yo'nalishini (`ws/live/<room_name>/`) ula.
++   - Proyekt ildizidagi `asgi.py` faylini yangilab, `ProtocolTypeRouter` orqali HTTP va URLRouter (WebSockets) ni ajratib ber.
++
++4. VIEW VA SHABLON (UI):
++   - `core/views.py` ichiga `live_stream(request, room_name)` funksiyasini qo'sh.
++   - `templates/live_stream.html` shablonini yarat. Shablon ichida:
++     - Chap tomonda: `<video id="localVideo" autoplay playsinline muted></video>` tegi bo'lsin. JavaScript orqali `navigator.mediaDevices.getUserMedia({video: true, audio: true})` yordamida kamerani yoqib, videoga uzatish kodini yoz.
++     - O'ng tomonda: Jonli chat oynasi (xabarlar chiqadigan joy, matn kiritish inputi va "Yuborish" tugmasi) bo'lsin. JavaScript `new WebSocket()` orqali chatga ulansin va xabarlarni real-vaqtda ekranga chiqarsin.
++
++5. URL YO'NALISHLARI:
++   - `core/urls.py` ichiga `path('live/<str:room_name>/', views.live_stream, name='live_stream')` marshrutini qo'sh.
++
++Hamma SEARCH/REPLACE bloklarini va yangi fayllarni to'liq tayyorlab ber.
+
+# 2026-06-06 16:39:52.803880
++y
+
+# 2026-06-06 16:44:15.723813
++Loyihaning menyusiga (Sidebar yoki Dashboard navigatsiya qismiga) "Jonli efir" bo'limini qo'shishimiz kerak. 
++
++Buning uchun `templates/dashboard.html` (yoki loyihadagi asosiy menyu joylashgan shablon faylini) ochib, boshqa bo'limlar (masalan, Talabalar, Natijalar) yoniga quyidagi HTML kodni chiroyli qilib joylashtir:
++
++```html
++<li class="nav-item">
++    <a class="nav-link d-flex align-items-center gap-2" href="/live/main-room/">
++        <i class="bi bi-camera-video-fill text-danger animate-pulse"></i>
++        <span>Jonli efir</span>
++        <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.65rem;">LIVE</span>
++    </a>
++</li>
+
+# 2026-06-06 16:44:18.563161
++y
+
+# 2026-06-06 16:50:34.240393
++Lokal tarmoq ulanishidagi xatoliklarni bartaraf etish uchun quyidagi o'zgarishlarni kirit:
++
++1. SOZLAMALAR (`mini_hemis/settings.py` va `complete_settings.py`):
++   - `ALLOWED_HOSTS` ro'yxatiga yangi IP manzilni ham qo'shib qo'y:
++     ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '10.42.0.251']
++
++2. SHABLONDAGI JAVASCRIPT KOD (`templates/live_stream.html`):
++   - Shablon ichidagi WebSocket ulanish manzilini (JS kodini) tekshir. Brauzer HTTP emas, WS (WebSocket) protokoli bilan ulanishi kerak. JavaScript linkini dinamik qilib mana bunday ko'rinishga keltir:
++     const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
++     const chatSocket = new WebSocket(wsProtocol + window.location.host + '/ws/live/{{ room_name }}/');
++
++Hamma kerakli SEARCH/REPLACE bloklarini qo'lla.
+
+# 2026-06-06 16:50:36.831271
++y
+
+# 2026-06-06 16:52:24.807064
++Admin jonli efir boshlaganda saytdagi barcha foydalanuvchilarga srazu bildirishnoma (alert) chiqishi va efirga havola ko'rinishi kerak. Buning uchun quyidagi o'zgarishlarni kirit:
++
++1. GLOBAL NOTIFICATION CONSUMER (`core/consumers.py`):
++   - Ichiga barcha foydalanuvchilar umumiy ulanadigan `NotificationConsumer` klassini qo'sh. U `global_notifications` guruhiga ulansin:
++     class NotificationConsumer(AsyncWebsocketConsumer):
++         async def connect(self):
++             await self.channel_layer.group_add("global_notifications", self.channel_name)
++             await self.accept()
++         async def disconnect(self, close_code):
++             await self.channel_layer.group_discard("global_notifications", self.channel_name)
++         async def send_notification(self, event):
++             await self.send(text_data=json.dumps(event["data"]))
++
++2. ROUTING (`core/routing.py`):
++   - WebSocket yo'nalishlariga `path('ws/notifications/', consumers.NotificationConsumer.as_view())` marshrutini qo'sh.
++
++3. EFIR BOSHLANGANINI NAVBATCHI QILISH (`core/views.py`):
++   - Admin `live_stream` view-siga kirganda (efir boshlaganda), `channel_layer` orqali `global_notifications` guruhiga asinxron xabar yuboradigan kod qo'sh:
++     from channels.layers import get_channel_layer
++     from asgiref.sync import async_to_sync
++     
++     # Efir xonasiga kirilganda (agar foydalanuvchi super_admin yoki admin bo'lsa)
++     channel_layer = get_channel_layer()
++     async_to_sync(channel_layer.group_send)(
++         "global_notifications",
++         {
++             "type": "send_notification",
++             "data": {
++                 "action": "live_started",
++                 "room_name": room_name,
++                 "message": "Admin jonli efir boshladi!"
++             }
++         }
++     )
++
++4. ASOSIY SHABLON (`templates/base.html` yoki `templates/dashboard.html`):
++   - Hamma sahifada ishlaydigan umumiy shablonning eng pastiga JavaScript kod qo'sh. Bu kod orqali har bir foydalanuvchi orqat fonda `ws://.../ws/notifications/` ga ulanib tursin.
++   - Agar kelgan xabar `live_started` bo'lsa, ekranning tepasida Bootstrap orqali chiroyli qizil alert (banner) chiqsin:
++     <div id="live-alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
++     
++     JS kod:
++     const numProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
++     const notifSocket = new WebSocket(numProtocol + window.location.host + '/ws/notifications/');
++     notifSocket.onmessage = function(e) {
++         const data = JSON.parse(e.data);
++         if (data.action === 'live_started') {
++             const alertContainer = document.getElementById('live-alert-container');
++             alertContainer.innerHTML = `
++                 <div class="alert alert-danger alert-dismissible fade show shadow-lg d-flex align-items-center gap-3" role="alert">
++                     <i class="bi bi-broadcast animate-pulse" style="font-size: 1.5rem;"></i>
++                     <div>
++                         <strong>${data.message}</strong><br>
++                         <a href="/live/${data.room_name}/" class="btn btn-sm btn-light mt-1">Efirga qo'shilish</a>
++                     </div>
++                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
++                 </div>
++             `;
++         }
++     };
++
++Hamma SEARCH/REPLACE bloklarini chiroyli qilib qo'lla.
+
+# 2026-06-06 16:53:38.834017
++y
+
+# 2026-06-08 09:46:46.931801
++/add core/api/v1/urls.py core/api/v1/views.py core/api/v1/serializers.py core/management/commands/unlock_user.py security_scanner.py
+
+# 2026-06-08 09:46:56.994077
++Admin jonli efir boshlaganda saytdagi barcha foydalanuvchilarga srazu bildirishnoma (alert) chiqishi va efirga havola ko'rinishi kerak. Buning uchun quyidagi o'zgarishlarni kirit:
++
++1. GLOBAL NOTIFICATION CONSUMER (`core/consumers.py`):
++   - Ichiga barcha foydalanuvchilar umumiy ulanadigan `NotificationConsumer` klassini qo'sh. U `global_notifications` guruhiga ulansin:
++     class NotificationConsumer(AsyncWebsocketConsumer):
++         async def connect(self):
++             await self.channel_layer.group_add("global_notifications", self.channel_name)
++             await self.accept()
++         async def disconnect(self, close_code):
++             await self.channel_layer.group_discard("global_notifications", self.channel_name)
++         async def send_notification(self, event):
++             await self.send(text_data=json.dumps(event["data"]))
++
++2. ROUTING (`core/routing.py`):
++   - WebSocket yo'nalishlariga `path('ws/notifications/', consumers.NotificationConsumer.as_view())` marshrutini qo'sh.
++
++3. EFIR BOSHLANGANINI NAVBATCHI QILISH (`core/views.py`):
++   - Admin `live_stream` view-siga kirganda (efir boshlaganda), `channel_layer` orqali `global_notifications` guruhiga asinxron xabar yuboradigan kod qo'sh:
++     from channels.layers import get_channel_layer
++     from asgiref.sync import async_to_sync
++     
++     # Efir xonasiga kirilganda (agar foydalanuvchi super_admin yoki admin bo'lsa)
++     channel_layer = get_channel_layer()
++     async_to_sync(channel_layer.group_send)(
++         "global_notifications",
++         {
++             "type": "send_notification",
++             "data": {
++                 "action": "live_started",
++                 "room_name": room_name,
++                 "message": "Admin jonli efir boshladi!"
++             }
++         }
++     )
++
++4. ASOSIY SHABLON (`templates/base.html` yoki `templates/dashboard.html`):
++   - Hamma sahifada ishlaydigan umumiy shablonning eng pastiga JavaScript kod qo'sh. Bu kod orqali har bir foydalanuvchi orqat fonda `ws://.../ws/notifications/` ga ulanib tursin.
++   - Agar kelgan xabar `live_started` bo'lsa, ekranning tepasida Bootstrap orqali chiroyli qizil alert (banner) chiqsin:
++     <div id="live-alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
++     
++     JS kod:
++     const numProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
++     const notifSocket = new WebSocket(numProtocol + window.location.host + '/ws/notifications/');
++     notifSocket.onmessage = function(e) {
++         const data = JSON.parse(e.data);
++         if (data.action === 'live_started') {
++             const alertContainer = document.getElementById('live-alert-container');
++             alertContainer.innerHTML = `
++                 <div class="alert alert-danger alert-dismissible fade show shadow-lg d-flex align-items-center gap-3" role="alert">
++                     <i class="bi bi-broadcast animate-pulse" style="font-size: 1.5rem;"></i>
++                     <div>
++                         <strong>${data.message}</strong><br>
++                         <a href="/live/${data.room_name}/" class="btn btn-sm btn-light mt-1">Efirga qo'shilish</a>
++                     </div>
++                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
++                 </div>
++             `;
++         }
++     };
++
++Hamma SEARCH/REPLACE bloklarini chiroyli qilib qo'lla.
+
+# 2026-06-08 09:56:38.801807
++y
+
+# 2026-06-08 09:57:01.532594
++yy
+
+# 2026-06-08 09:57:04.268555
++y
+
+# 2026-06-08 10:01:23.957930
++`templates/live_stream.html` faylini ochib, kamera va mikrofonni yoqadigan JavaScript qismini tekshir. Brauzerda ruxsat berilgan bo'lsa ham xatolik berayotganini tuzatish uchun `navigator.mediaDevices.getUserMedia` qismini quyidagi xavfsiz va xatoliklarni log qiladigan kod blo'giga almashtir:
++
++```javascript
++const localVideo = document.getElementById('localVideo');
++
++async function startLiveStream() {
++    try {
++        console.log("Media qurilmalari so'ralmoqda...");
++        const stream = await navigator.mediaDevices.getUserMedia({ 
++            video: { width: { ideal: 1280 }, height: { ideal: 720 } }, 
++            audio: true 
++        });
++        
++        console.log("Kamera va mikrofon muvaffaqiyatli ulandi.");
++        if (localVideo) {
++            localVideo.srcObject = stream;
++        } else {
++            console.error("localVideo elementi shablonda topilmadi!");
++        }
++    } catch (error) {
++        console.error("Media error: ", error);
++        alert("Kamera/Mikrofonni ulashda xatolik: " + error.name + " - " + error.message);
++    }
++}
++
++// Sahifa yuklanganda efirni avtomatik tekshirib yoqish
++document.addEventListener('DOMContentLoaded', startLiveStream);
+
+# 2026-06-08 10:51:02.941895
++Jonli efir tizimini Streamer (Efir uzatuvchi) va Viewer (Ko'ruvchi) rollariga ajratishimiz kerak. Bir kishi efir boshlasa, qolgan hamma "Qo'shilish" tugmasini bosib faqat ko'ra oladigan bo'lsin. Buning uchun `templates/live_stream.html` faylini butunlay quyidagicha yangila:
++
++1. HTML ARXITEKTURASI:
++   - Shablon ichida ikkita video element bo'lsin:
++     <video id="localVideo" autoplay playsinline muted style="width: 100%; max-width: 600px; display: none; border-radius: 8px;"></video>
++     <video id="remoteVideo" autoplay playsinline style="width: 100%; max-width: 600px; border-radius: 8px; background: #000;"></video>
++   
++   - Foydalanuvchi streamer bo'lsa "Efirni boshlash" tugmasi, tomoshabin bo'lsa "Efirga qo'shilish" tugmasi ko'rinsin. Django context orqali foydalanuvchi admin ekanligini tekshir (`{% if request.user.is_superuser or request.user.user_type == 'admin' %}`).
++
++2. JAVASCRIPT WEBRTC VA WEBSOCKET LOGIKASI:
++   - JavaScript orqali WebRTC `RTCPeerConnection` yarating.
++   - Efir boshlovchi (Streamer) tugmani bosganda: `navigator.mediaDevices.getUserMedia` orqali kamerani yoqsin, `localVideo`ga ulasin va har bir video/audio trekni `peerConnection.addTrack()` orqali qo'shsin. So'ngra WebSocket orqali WebRTC `offer` xabarini yuborsin.
++   - Tomoshabin (Viewer) "Efirga qo'shilish" tugmasini bosganda: WebSocket orqali kelgan streamerning `offer` signalini qabul qilib, o'zining `answer` javobini qaytarsin. `peerConnection.ontrack` hodisasi ishga tushganda kelayotgan oqimni (stream) `remoteVideo.srcObject` ga ulab, efirni ko'rsatishni boshlasin.
++   
++3. CHAT VA SIGNALLING BIRGA ISHLASHI:
++   - WebSocket (`ws/live/{{ room_name }}/`) ham chat xabarlarini, ham WebRTC signallarini (`offer`, `answer`, `candidate`) farqlab, guruhdagi barcha foydalanuvchilarga tarqatadigan bo'lsin.
++
++Ushbu mantiqni to'liq qoplab beradigan SEARCH/REPLACE bloklarini yoz va shablonni mukammal holatga keltir.
+
+# 2026-06-08 10:56:18.020833
++`templates/live_stream.html` faylidagi JavaScript qismida kamera va mikrofonni so'rayotgan `navigator.mediaDevices.getUserMedia` mantiqini quyidagicha o'zgartir. 
++
++Agar brauzer xavfsizlik cheklovi (Insecure Context yoki Permission Denied) tufayli haqiqiy kameraga ruxsat bermasa, loyiha qulab tushmasligi va chat hamda WebRTC ulanishi uzilib qolmasligi uchun vaqtincha "Virtual/Sintetik Kamera Oqimi" (Fake Stream) yaratadigan mantiq qo'sh:
++
++```javascript
++async function startLiveStream() {
++    try {
++        console.log("Media qurilmalari so'ralmoqda...");
++        const stream = await navigator.mediaDevices.getUserMedia({ 
++            video: true, 
++            audio: true 
++        });
++        
++        console.log("Haqiqiy kamera va mikrofon muvaffaqiyatli ulandi.");
++        if (localVideo) localVideo.srcObject = stream;
++        return stream;
++    } catch (error) {
++        console.warn("Haqiqiy kameraga ruxsat berilmadi, xavfsiz virtual oqim ishga tushirilmoqda:", error);
++        
++        // Brauzer bloklaganda oq oyna o'rniga dinamik Canvas orqali virtual oqim yaratish:
++        const canvas = document.createElement('canvas');
++        canvas.width = 640;
++        canvas.height = 480;
++        const ctx = canvas.getContext('2d');
++        
++        // Orqa fonda animatsiya hosil qilib turish (ekran qop-qora bo'lib qolmasligi uchun)
++        setInterval(() => {
++            ctx.fillStyle = '#1e1e2f';
++            ctx.fillRect(0, 0, canvas.width, canvas.height);
++            ctx.fillStyle = '#ff4757';
++            ctx.font = '20px sans-serif';
++            ctx.fillText('JONLI EFIR UZATILMOQDA...', 50, 240);
++            ctx.fillStyle = '#ffffff';
++            ctx.font = '14px sans-serif';
++            ctx.fillText(new Date().toLocaleTimeString(), 50, 280);
++        }, 1000);
++
++        const fakeStream = canvas.captureStream(25); // 25 FPS virtual video oqimi
++        
++        if (localVideo) {
++            localVideo.srcObject = fakeStream;
++        }
++        
++        // Alert xatoligini olib tashla, foydalanuvchiga muammosiz virtual oqimni uzatishni boshla
++        return fakeStream;
++    }
++}
+
+# 2026-06-08 10:56:38.510771
++y
+
+# 2026-06-08 11:01:36.850829
++Jonli efir sahifasini xuddi Zoom yoki Google Meet kabi to'liq funksiyali tizimga aylantirishimiz kerak. Buning uchun quyidagi o'zgarishlarni kirit:
++
++1. BACKEND VA WEBSOCKET JONLI RO'YXAT (`core/consumers.py`):
++   - `ChatConsumer` (yoki `LiveConsumer`) ichida guruhga kim ulanadi (connect) va uziladi (disconnect), o'sha zaxotiyoq onlayn foydalanuvchilar ro'yxatini dinamik yangilab tarqatadigan mantiq qo'sh.
++   - Har safar yangi odam kirganda yoki chiqqanda guruhga `{"type": "user_list", "users": [...]}` ko'rinishida xabar yuborilsin. Foydalanuvchilar nomi `self.scope["user"].username` (yoki ism-familiyasi) orqali olinsin.
++
++2. SHABLON INTERFEYSI (`templates/live_stream.html`):
++   - Dizaynni "Zoom" uslubiga keltir:
++     - Markazda: Kattaroq video oynasi bo'lsin.
++     - Video ostida: "Efirni boshlash (Kamera)", "Ekranni ulash (Screen Share)" va "Efirni yakunlash" boshqaruv tugmalari joylashsin.
++     - O'ng tomonda: Ikkita tab yoki panel bo'lsin: 
++       1. "Jonli Chat" (Xabarlar chiqadigan joy va yuborish inputi).
++       2. "Efir qatnashchilari" (`<ul id="online-users-list"></ul>` elementi).
++
++3. JAVASCRIPT EKRAN TRANSLYATSIYASI (Screen Sharing):
++   - Shablonga "Ekranni ulash" tugmasini qo'sh va unga `navigator.mediaDevices.getDisplayMedia({ video: true })` mantiqini ula.
++   - Foydalanuvchi ekranni ulashni tanlaganda, video oqimi `localVideo.srcObject` ga biriktirilsin va WebRTC `peerConnection` dagi mavjud video trek `rtpSender.replaceTrack(screenTrack)` orqali almashtirilsin. Shunda tomoshabinlarga srazu kompyuter ekrani uzatiladi.
++
++4. REAL-VAQTDAGI JONLI CHAT:
++   - WebSocket'dagi `Uzildi` muammosini yo'qotish uchun JavaScript ulanish manzili to'g'riligini va xabar kelganda (`onmessage`) agar `data.type === 'chat_message'` bo'lsa, chat oynasiga xabarni kim yozgani bilan chiroyli qilib qo'shishini ta'minla:
++     `chatLog.innerHTML += '<div><strong>' + data.user + ':</strong> ' + data.message + '</div>';`
++
++Hamma kerakli SEARCH/REPLACE bloklarini mukammal va xatosiz tayyorlab ber.
+
+# 2026-06-08 11:22:48.547560
++Boshqa foydalanuvchilar (Tomoshabinlar) "Efirga qo'shilish" tugmasini bosganda video oqimni ko'ra olishi uchun `core/consumers.py` ichidagi WebSocket consumer (ChatConsumer yoki LiveConsumer) klasini yangilashimiz kerak. 
++
++U faqat chat matnini emas, WebRTC signallarini ham guruhga tarqatadigan bo'lsin. Quyidagi mantiqni tekshir va qo'sh:
++
++1. CONSUMER RECEPTOR (`receive` funksiyasi):
++   - Kelayotgan JSON ma'lumotni o'qi. Agar xabar ichida `type: 'offer'`, `type: 'answer'` yoki `type: 'candidate'` kabi WebRTC parametrlari bo'lsa, ularni guruhdagi boshqa barcha foydalanuvchilarga srazu yo'naltirsin:
++
++```python
++import json
++from channels.generic.websocket import AsyncWebsocketConsumer
++
++class ChatConsumer(AsyncWebsocketConsumer):
++    async def connect(self):
++        self.room_name = self.scope['url_route']['kwargs']['room_name']
++        self.room_group_name = f'live_{self.room_name}'
++        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
++        await self.accept()
++
++    async def disconnect(self, close_code):
++        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
++
++    async def receive(self, text_data):
++        data = json.loads(text_data)
++        message_type = data.get('type')
++
++        # WebRTC signallarini guruhga tarqatish (Offer, Answer, Candidate)
++        if message_type in ['offer', 'answer', 'candidate']:
++            await self.channel_layer.group_send(
++                self.room_group_name,
++                {
++                    'type': 'broadcast_signal',
++                    'sender_channel_name': self.channel_name,
++                    'data': data
++                }
++            )
++        else:
++            # Oddiy chat xabarlari uchun mavjud mantiq
++            await self.channel_layer.group_send(
++                self.room_group_name,
++                {
++                    'type': 'chat_message',
++                    'message': data.get('message'),
++                    'user': self.scope["user"].username if self.scope["user"].is_authenticated else "Mehmon"
++                }
++            )
++
++    async def broadcast_signal(self, event):
++        # Signalni yuborgan odamning o'ziga qaytarib yubormaslik sharti
++        if self.channel_name != event['sender_channel_name']:
++            await self.send(text_data=json.dumps(event['data']))
++
++    async def chat_message(self, event):
++        await self.send(text_data=json.dumps({
++            'type': 'chat_message',
++            'message': event['message'],
++            'user': event['user']
++        }))
+
+# 2026-06-08 11:27:12.690002
++`mini_hemis/asgi.py` faylini och. Unda `core.routing` yoki boshqa modellardan import bajarilishidan oldin Django sozlamalari yuklanishi shart. Fayl mazmunini aynan quyidagicha tartiblab yangila:
++
++```python
++import os
++from django.core.asgi import get_asgi_application
++
++# Sozlamalar moduli birinchi bo'lib yuklanishi shart!
++os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mini_hemis.settings')
++django_asgi_app = get_asgi_application()
++
++# Qolgan routing va channels importlari faqat get_asgi_application() dan keyin kelishi kerak
++from channels.routing import ProtocolTypeRouter, URLRouter
++from channels.auth import AuthMiddlewareStack
++from core.routing import websocket_urlpatterns
++
++application = ProtocolTypeRouter({
++    "http": django_asgi_app,
++    "websocket": AuthMiddlewareStack(
++        URLRouter(
++            websocket_urlpatterns
++        )
++    ),
++})
+
+# 2026-06-08 11:27:15.440727
++Y
+
+# 2026-06-08 11:30:12.486065
++`templates/live_stream.html` faylidagi JavaScript kodini WebSocket ulanishi to'liq tayyor bo'lgandan keyin signallarni yuboradigan qilib xavfsiz holatga keltir. Quyidagi o'zgarishlarni kirit:
++
++1. WEBSOCKET STATE TEKSHIRUVI:
++   - WebSocket orqali xabar yuboradigan har qanday joyda (masalan, `send_signal` yoki `chatSocket.send`) to'g'ridan-to'g'ri yubormasdan, oldin ulanish holatini tekshiradigan funksiya qo'sh:
++     function safeSend(data) {
++         if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
++             chatSocket.send(JSON.stringify(data));
++         } else {
++             console.warn("WebSocket hali tayyor emas, xabar navbatga qo'yildi yoki kutilmoqda.");
++         }
++     }
++
++2. ULANISH TAYYOR BO'LGANDA ISHGA TUSHIRISH (`onopen`):
++   - Kamera yoki virtual oqimni yoqish, onlayn foydalanuvchilar ro'yxatiga qo'shilish harakatlarini faqat `chatSocket.onopen` hodisasi ichida bajargin:
++     chatSocket.onopen = function(e) {
++         console.log("WebSocket muvaffaqiyatli ulandi!");
++         // Agar foydalanuvchi streamer bo'lsa, xonaga signal yuborishni shu yerda boshlasin
++     };
++
++3. CHAT VA ZOOM FUNKSIYALARI INTEGRASIYASI:
++   - Kim yozsa hamma foydalanuvchilarda chat yangilanadigan va foydalanuvchilar ro'yxati (User List) asinxron yangilanadigan logikani xavfsiz saqlab qol.
++
++SEARCH/REPLACE bloklarini chiroyli qilib qo'lla.
+
+# 2026-06-08 11:42:44.978030
++Jonli efir tizimini to'liq xavfsiz, xuddi Zoom kabi va xatoliksiz ishlaydigan holatga keltirishimiz kerak. Buning uchun `templates/live_stream.html` faylini quyidagi mukammal arxitektura asosida to'liq yangila:
++
++1. RUXSATLAR VA INTERFEYS (Django Context):
++   - Faqat `{% if request.user.is_superuser %}` bo'lgandagina Super Admin uchun boshqaruv tugmalari ("Efirni boshlash", "Ekranni ulash", "Efirni yakunlash") va `<video id="localVideo" autoplay playsinline muted></video>` elementi ko'rinsin.
++   - Oddiy foydalanuvchilar (talaba/operator) link orqali kirganda ularga faqat `<video id="remoteVideo" autoplay playsinline></video>` (Admin efirini ko'rish oynasi), Jonli Chat paneli va onlayn foydalanuvchilar ro'yxati ko'rinsin. Ulardan kamera/mikrofon UMUMAN so'ralmasin.
++
++2. JAVASCRIPT WEBSOCKET TAYYORLIK TEKSHIRUVI (CONNECTING Xatoligini yo'qotish):
++   - WebSocket ulanishini (`chatSocket`) yaratgandan so'ng, `Still in CONNECTING state` xatoligini butunlay yo'qotish uchun barcha yuborish funksiyalarini `safeSend` tizimiga o'tkaz:
++     function safeSend(data) {
++         if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
++             chatSocket.send(JSON.stringify(data));
++         } else {
++             console.log("WebSocket ulanishi kutilmoqda, xabar yuborilmadi:", data);
++         }
++     }
++   - Sahifa yuklanganda avtomatik hech narsa yuborma. Admin "Efirni boshlash" yoki "Ekranni ulash" tugmasini bosgandagina WebRTC jarayoni boshlanib, signallar `safeSend` orqali uzatilsin.
++
++3. EKRAN TRANSLYATSIYASI (Screen Sharing):
++   - Admin "Ekranni ulash" tugmasini bosganda `navigator.mediaDevices.getDisplayMedia({ video: true })` ishga tushsin va WebRTC orqali tomoshabinlarga admin ekrani silliq uzatilsin.
++
++4. REAL-VAQTDAGI CHAT VA FOYDALANUVCHILAR RO'YXATI:
++   - WebSocket orqali kelgan `chat_message` tipidagi barcha xabarlar chat oynasida darhol ("Kim yozgani: matn" ko'rinishida) paydo bo'lsin.
++   - Guruhdagi barcha onlayn foydalanuvchilar ro'yxati (`user_list`) o'ng tomondagi panelda dinamik ravishda yangilanib tursin.
++
++Ushbu qoidalarga mos mukammal, toza va xatosiz JavaScript hamda HTML kodini yozib, SEARCH/REPLACE bloklarini qo'lla.
+
+# 2026-06-08 11:42:47.553255
++y
+
+# 2026-06-08 11:49:06.912585
++yy
+
+# 2026-06-08 11:49:11.336273
++y
+
+# 2026-06-08 11:53:48.534907
++Loyiha marshrutlarida va jonli efir shablonida jiddiy xatolik bor, shuni uzil-kesil tuzatishimiz kerak. Quyidagi o'zgarishlarni kirit:
++
++1. BACKEND ROUTINGNI TO'G'RILASH (`core/routing.py`):
++   - URL marshrutini oxirida slash bo'lgan va bo'lmagan har qanday holatga mos keladigan qilib ikkala variantini ham yoz yoki xavfsiz holatga keltir:
++     from django.urls import re_path
++     from . import consumers
++
++     websocket_urlpatterns = [
++         re_path(r'^ws/live/(?[a-zA-Z0-9_-]+)/?$', consumers.ChatConsumer.as_abstract_class() if hasattr(consumers.ChatConsumer, 'as_abstract_class') else consumers.ChatConsumer.as_asgi()),
++     ]
++
++2. SHABLONDAGI WEBSOCKET MANZILINI VA RUXSATLARNI YANGILASH (`templates/live_stream.html`):
++   - JavaScript ichidagi `ws_path` yaratilishini to'g'rilash:
++     const roomName = "{{ room_name }}";
++     const ws_scheme = window.location.protocol === "https:" ? "wws" : "ws";
++     // URL oxirida ortiqcha slash muammosini yo'qotish uchun aniq format:
++     const chatSocket = new WebSocket(ws_scheme + '://' + window.location.host + '/ws/live/' + roomName);
++
++3. SUPER ADMIN LOGIKASI (ZOOM TIZIMI):
++   - Faqat `{% if request.user.is_superuser %}` ichida Admin boshqaruv paneli ("Efirni boshlash", "Ekranni ulash", "Efirni yakunlash") ko'rinsin. Admin kamerani yoki ekranni ulash tugmasini bosgandagina WebRTC jarayoni boshlansin.
++   - Oddiy foydalanuvchilar (talaba/operator) maxsus havola bilan kirganda ulardan kamera/mikrofon ruxsati so'ralmasin, faqat `<video id="remoteVideo">` orqali admin uzatayotgan efir (kamera yoki ekran) va chat oynasi real-vaqtda ko'rinsin.
++   - Chatda kim yozsa ham (`chat_message`) barcha qatnashchilar ekranida xabarlar sekundiga yetmasdan paydo bo'lsin.
++
++Hamma SEARCH/REPLACE bloklarini chiroyli va xatosiz qo'lla.
+
+# 2026-06-08 11:53:50.562623
++y
+
+# 2026-06-08 11:59:42.269773
++`templates/live_stream.html` faylidagi JavaScript qismini to'liq ko'rib chiq. Mahalliy tarmoqda (Local Network / IP 10.42.0.251) WebRTC oqimi boshqa profillarga mutloq yetib borishi va xuddi Zoom kabi ishlashi uchun kodni quyidagi logikaga asosan yangila:
++
++1. LOCAL ICE CONFIGURATION (Lokal tarmoq uchun WebRTC):
++   - RTCPeerConnection yaratilayotgan joyda `iceServers` ro'yxatini bo'sh qoldir yoki lokal IP'lar bilan ishlashi uchun quyidagicha mosla:
++     const peerConnection = new RTCPeerConnection({ iceServers: [] }); // Mahalliy tarmoqda STUN shart emas, to'g'ridan-to'g'ri lokal IP orqali bog'lanadi.
++
++2. SUPER ADMIN KANALI (Efirni yoquvchi):
++   - Admin "Efirni boshlash" (Kamera + Mikrofon) tugmasini bosganda, `navigator.mediaDevices.getUserMedia({ video: true, audio: true })` chaqirilsin. Agar brauzer HTTP xavfsizligi sababli buni bloklasa, darhol orqaga qaytish (Fallback) sifatida boyagi chiroyli Canvas virtual oqimini va soat animatsiyasini (Fake Stream) yaratsin, lekin mantiqni to'xtatib qo'ymasin.
++   - Admin "Ekranni ulash" (Screen Share) tugmasini bosganda `navigator.mediaDevices.getDisplayMedia({ video: true })` ishga tushsin.
++   - Olingan oqim (Stream) ichidagi barcha treklar (`stream.getTracks()`) `peerConnection.addTrack(track, stream)` orqali WebRTC ga qo'shilsin va `safeSend` orqali tomoshabinlarga tarqatilsin.
++
++3. ODDIY FOYDALANUVCHILAR (Tomoshabinlar / Link orqali kirganlar):
++   - Boshqa profillar (Talaba/Operator) link orqali kirganda ulardan KAMERA VA MIKROFON MUTLOQ SO'RALMASIN! (Ularda hech qanday xatolik chiqmasligi uchun).
++   - Ularda `peerConnection.ontrack` hodisasi ishlashi bilanoq, kelayotgan video va audio oqimi srazu `<video id="remoteVideo">` elementiga biriktirilsin va avtomatik ravishda efir ko'rinsin.
++
++4. WEBSOCKET ALOQA VA RECONNECT (Uzilishlarni yo'qotish):
++   - Agar WebSocket tasodifan uzilsa (`onclose`), u avtomatik ravishda 2 sekunddan keyin qayta ulansin (`reconnect`).
++   - Chatda xabar yuborilganda va kelganda (`chat_message`), matn xuddi Zoom'dagidek barcha onlayn foydalanuvchilar panelida chiroyli ko'rinsin.
++
++Mavjud shablon kodi ichidagi JavaScript mantiqini shu qoidalarga moslab to'liq yangila va SEARCH/REPLACE bloklarini qo'lla.
+
+# 2026-06-08 11:59:43.998113
++y
+
+# 2026-06-08 12:18:24.899484
++`live` yoki `live_stream` funksiyasi joylashgan `views.py` faylini och. Jonli efir dars xonasiga hamma login qilmasdan ham link orqali kirishi uchun quyidagi o'zgarishlarni kirit:
++
++1. Efir ko'rinishi (view) ustidagi `@login_required` dekoratorini olib tashla (o'chirib yubor).
++2. Funksiya ichida request.user tizimga kirmagan bo'lsa ham xatolik bermasdan, anonim foydalanuvchi sifatida dars shablonini yuklaydigan qil.
+
+# 2026-06-08 12:18:28.209809
++y
+
+# 2026-06-08 12:20:10.029674
++Lokal tarmoqda (10.42.0.251 va 10.42.0.21) WebRTC oqimi bir-biriga 100% yetib borishi uchun `templates/live_stream.html` ichidagi JavaScript kodini quyidagicha yangila:
++
++1. ICE CANDIDATE HIYLASI (mDNS bypass):
++   - `peerConnection.onicecandidate` funksiyasini top. Agar `event.candidate` mavjud bo'lsa va uning ichida mDNS (ya'ni `.local` bilan tugaydigan yashirin nom) bo'lsa, uni bizning qat'iy lokal IP manzilimizga almashtiradigan yoki to'g'ridan-to'g'ri lokal tarmoq uchun signal yuboradigan mantiq qo'sh:
++
++```javascript
++peerConnection.onicecandidate = event => {
++    if (event.candidate) {
++        let candidateStr = event.candidate.candidate;
++        // Agar brauzer lokal IP'ni yashirgan bo'lsa, uni majburiy ravishda server IP'siga yo'naltiramiz
++        if (candidateStr.includes(".local")) {
++            console.log("mDNS aniqlandi, lokal IP majburlanmoqda...");
++        }
++        safeSend({
++            'type': 'candidate',
++            'candidate': event.candidate
++        });
++    }
++};
+
+# 2026-06-08 12:20:12.891605
++y

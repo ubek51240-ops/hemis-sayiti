@@ -1,0 +1,44 @@
+cat > ~/mini_hemis/templates/edit_specialty.html << 'EOF'
+{% extends 'base.html' %}
+{% block title %}Mutaxassislikni Tahrirlash - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4><i class="bi bi-pencil"></i> Mutaxassislikni Tahrirlash</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Fakultet *</label>
+                        <select name="faculty" class="form-control" required>
+                            {% for faculty in faculties %}
+                            <option value="{{ faculty.id }}" {% if faculty.id == specialty.faculty.id %}selected{% endif %}>
+                                {{ faculty.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Mutaxassislik Nomi *</label>
+                        <input type="text" name="name" class="form-control" value="{{ specialty.name }}" required>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle"></i> Saqlash
+                        </button>
+                        <a href="{% url 'manage_faculties' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Bekor qilish
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+EOF

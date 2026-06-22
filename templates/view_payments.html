@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}To'lovlar Tarixi - {{ student.full_name }}{% endblock %}
+{% block content %}
+<div class="row">
+    <!-- Student Info Card -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5><i class="bi bi-person"></i> Talaba Ma'lumotlari</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>FIO:</strong></td>
+                        <td>{{ student.full_name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pasport:</strong></td>
+                        <td>{{ student.passport }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>JSHSHIR:</strong></td>
+                        <td>{{ student.jshshir }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HEMIS ID:</strong></td>
+                        <td>
+                            {% if student.hemis_id %}
+                                <span class="badge bg-success">{{ student.hemis_id }}</span>
+                            {% else %}
+                                <span class="badge bg-dark">Yo'q</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fakultet:</strong></td>
+                        <td>{{ student.faculty.name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mutaxassislik:</strong></td>
+                        <td>{{ student.specialty.name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Kontrakt:</strong></td>
+                        <td><span class="badge bg-warning text-dark">{{ contract_amount|floatformat:0 }} so'm</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>To'langan:</strong></td>
+                        <td><span class="badge bg-success">{{ total_paid|floatformat:0 }} so'm</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Qolgan qarz:</strong></td>
+                        <td>
+                            {% if remaining_debt > 0 %}
+                                <span class="badge bg-danger">{{ remaining_debt|floatformat:0 }} so'm</span>
+                            {% else %}
+                                <span class="badge bg-success">To'langan!</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accountant_dashboard' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Orqaga
+                    </a>
+                    {% if can_add_payment %}
+                    <a href="{% url 'add_payment' student.id %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> To'lov Qo'shish
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Summary -->
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h3>{{ total_paid|floatformat:0 }} so'm</h3>
+                <p class="mb-0">Jami To'langan Summa</p>
+            </div>
+        </div>
+        
+        <!-- Debt Summary -->
+        <div class="card mt-3 {% if remaining_debt > 0 %}bg-danger{% else %}bg-success{% endif %} text-white">
+            <div class="card-body text-center">
+                <h3>{{ remaining_debt|floatformat:0 }} so'm</h3>
+                <p class="mb-0">{% if remaining_debt > 0 %}Qolgan Qarz{% else %}Kontrakt To'langan!{% endif %}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payments History -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5><i class="bi bi-clock-history"></i> To'lovlar Tarixi</h5>
+                <span class="badge bg-light text-primary">{{ payments|length }} ta to'lov</span>
+            </div>
+            <div class="card-body">
+                {% if payments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Summa</th>
+                                    <th>Turi</th>
+                                    <th>Sana</th>
+                                    <th>Izoh</th>
+                                    <th>Kiritdi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><strong>{{ payment.amount|floatformat:0 }} so'm</strong></td>
+                                    <td>
+                                        <span class="badge bg-info">{{ payment.get_payment_type_display }}</span>
+                                    </td>
+                                    <td>{{ payment.payment_date|date:"d.m.Y" }}</td>
+                                    <td>{{ payment.description|default:"-" }}</td>
+                                    <td>
+                                        <small>{{ payment.created_by.username|default:"System" }}</small><br>
+                                        <small class="text-muted">{{ payment.created_at|date:"d.m.Y H:i" }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-dark">
+                                <tr>
+                                    <td colspan="2" class="text-end"><strong>Jami:</strong></td>
+                                    <td colspan="4"><strong>{{ total_paid|floatformat:0 }} so'm</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
+                        <h4 class="mt-3 text-muted">Hali to'lov qo'shilmagan</h4>
+                        {% if can_add_payment %}
+                        <a href="{% url 'add_payment' student.id %}" class="btn btn-success mt-3">
+                            <i class="bi bi-plus-circle"></i> Birinchi To'lovni Qo'shish
+                        </a>
+                        {% else %}
+                        <div class="alert alert-info mt-3">
+                            <i class="bi bi-info-circle"></i> To'lov qo'shish huquqi yo'q
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

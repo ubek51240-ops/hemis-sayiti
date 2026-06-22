@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}HEMIS ID Qo'shish - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto; padding: 30px 0;">
+    <div class="card" style="border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.12); border-radius: 14px; overflow: hidden;">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 40px; text-align: center;">
+            <h3 style="color: white; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                <i class="bi bi-pencil-square" style="font-size: 32px; margin-right: 12px;"></i> HEMIS IDni Qo'shish
+            </h3>
+            <p style="color: rgba(255,255,255,0.85); margin: 12px 0 0 0; font-size: 16px;">Talabaning HEMIS IDsini kiriting</p>
+        </div>
+        <div class="card-body" style="padding: 40px;">
+            <!-- Talaba ma'lumotlari -->
+            <div style="margin-bottom: 40px; padding: 20px; background-color: #f8f9fa; border-radius: 10px; border-left: 4px solid #667eea;">
+                <h5 style="font-weight: 700; margin-bottom: 15px; color: #333;">Talaba Ma'lumotlari</h5>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="font-weight: 600; color: #666; font-size: 13px;">To'liq Ism:</label>
+                        <p style="margin: 5px 0 0 0; font-size: 15px; color: #000;">{{ student.full_name }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: #666; font-size: 13px;">Pasport:</label>
+                        <p style="margin: 5px 0 0 0; font-size: 15px; color: #000; font-family: monospace;">{{ student.passport }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: #666; font-size: 13px;">JSHSHIR:</label>
+                        <p style="margin: 5px 0 0 0; font-size: 15px; color: #000; font-family: monospace;">{{ student.jshshir }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: #666; font-size: 13px;">Kurs:</label>
+                        <p style="margin: 5px 0 0 0; font-size: 15px; color: #000;">{{ student.course }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: #666; font-size: 13px;">Fakultet:</label>
+                        <p style="margin: 5px 0 0 0; font-size: 15px; color: #000;">{{ student.faculty.name }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: #666; font-size: 13px;">Mutaxassislik:</label>
+                        <p style="margin: 5px 0 0 0; font-size: 15px; color: #000;">{{ student.specialty.name }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HEMIS ID shakli -->
+            <form method="post" style="margin-bottom: 30px;">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 700; color: #333; margin-bottom: 10px;">HEMIS ID *</label>
+                    <input type="text" name="hemis_id" id="hemis_id" class="form-control" 
+                           value="{{ student.hemis_id }}"
+                           placeholder="HEMIS tizimidagi ID-ni kiriting (masalan: HID2024001)"
+                           style="padding: 12px 15px; font-size: 15px; border: 2px solid #ced4da; border-radius: 6px;"
+                           maxlength="20" required>
+                    <small style="color: #6c757d; display: block; margin-top: 8px;">HEMIS tizimidagi noyob identifikator (maksimum 20 ta belgi)</small>
+                </div>
+
+                <div style="display: flex; gap: 14px; margin-top: 30px;">
+                    <button type="submit" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 36px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; box-shadow: 0 3px 10px rgba(102, 126, 234, 0.35); transition: all 0.3s ease;">
+                        <i class="bi bi-check-circle"></i> Saqlash
+                    </button>
+                    <a href="{% url 'hemis_id_list' %}" class="btn" style="background-color: #95a5a6; color: white; padding: 14px 36px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+                        <i class="bi bi-arrow-left"></i> Orqaga
+                    </a>
+                </div>
+            </form>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" style="margin-top: 20px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

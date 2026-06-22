@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}Excel Yuklash Natijalari - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h4><i class="bi bi-file-earmark-check"></i> Excel Yuklash Natijalari</h4>
+    </div>
+    <div class="card-body">
+        <!-- Umumiy statistika -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h2>{{ added_students|length }}</h2>
+                        <p class="mb-0">Muvaffaqiyatli qo'shildi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h2>{{ duplicate_passports|length }}</h2>
+                        <p class="mb-0">Pasport takrorlandi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h2>{{ failed_students|length }}</h2>
+                        <p class="mb-0">Qo'shilmadi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h2>{{ total_rows }}</h2>
+                        <p class="mb-0">Jami qatorlar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Muvaffaqiyatli qo'shilganlar -->
+        {% if added_students %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-check-circle"></i> Muvaffaqiyatli qo'shilgan talabalar ({{ added_students|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Qator</th>
+                                <th>Pasport</th>
+                                <th>To'liq ism</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in added_students %}
+                            <tr>
+                                <td>{{ student.row }}</td>
+                                <td><strong>{{ student.passport }}</strong></td>
+                                <td>{{ student.full_name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Dublikat pasportlar -->
+        {% if duplicate_passports %}
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white">
+                <h5><i class="bi bi-exclamation-triangle"></i> Pasport seriyasi takrorlangan talabalar ({{ duplicate_passports|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i> 
+                    Quyidagi talabalar pasport seriyasi bazada mavjud bo'lgani uchun qo'shilmadi:
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Qator</th>
+                                <th>Pasport</th>
+                                <th>To'liq ism</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in duplicate_passports %}
+                            <tr>
+                                <td>{{ student.row }}</td>
+                                <td><strong class="text-warning">{{ student.passport }}</strong></td>
+                                <td>{{ student.full_name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Xatoliklar -->
+        {% if failed_students %}
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5><i class="bi bi-x-circle"></i> Qo'shilmagan talabalar ({{ failed_students|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <i class="bi bi-info-circle"></i> 
+                    Quyidagi talabalar xatolik tufayli qo'shilmadi:
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Qator</th>
+                                <th>Ma'lumotlar</th>
+                                <th>Sabab</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in failed_students %}
+                            <tr>
+                                <td>{{ student.row }}</td>
+                                <td>
+                                    <small>
+                                        {% for item in student.data %}
+                                            {{ item }}{% if not forloop.last %} | {% endif %}
+                                        {% endfor %}
+                                    </small>
+                                </td>
+                                <td><strong class="text-danger">{{ student.reason }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Tugmalar -->
+        <div class="d-flex gap-2 flex-wrap">
+            {% if failed_students or duplicate_passports %}
+            <a href="{% url 'download_failed_students_excel' %}" class="btn btn-warning">
+                <i class="bi bi-file-earmark-excel"></i> Xatoliklarni yuklab olish
+            </a>
+            {% endif %}
+            <a href="{% url 'upload_students_excel' %}" class="btn btn-primary">
+                <i class="bi bi-upload"></i> Yangi fayl yuklash
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-house"></i> Bosh sahifa
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

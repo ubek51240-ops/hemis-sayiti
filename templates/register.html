@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        <!-- Login Panel -->
+        <div class="col-md-6 d-flex align-items-center justify-content-center bg-light">
+            <div class="card shadow-lg" style="width: 400px;">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4><i class="bi bi-person-plus"></i> Ro'yxatdan o'tish</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.registration_type.id_for_label }}" class="form-label">
+                                <i class="bi bi-person-badge"></i> Ro'yxatdan o'tish turi
+                            </label>
+                            {{ form.registration_type }}
+                            {% if form.registration_type.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.registration_type.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text text-muted">
+                                <small><i class="bi bi-info-circle"></i> <strong>Talaba</strong> - O'qishga kirish uchun | <strong>Xodim</strong> - Ishga kirish uchun</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.full_name.id_for_label }}" class="form-label">
+                                <i class="bi bi-person"></i> F.I.Sh
+                            </label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.full_name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.passport.id_for_label }}" class="form-label">
+                                <i class="bi bi-person-badge"></i> Pasport raqami
+                            </label>
+                            {{ form.passport }}
+                            {% if form.passport.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.passport.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                <i class="bi bi-envelope"></i> Email manzil
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                <i class="bi bi-telephone"></i> Telefon raqam
+                            </label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.phone.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.jshshir.id_for_label }}" class="form-label">
+                                <i class="bi bi-hash"></i> JSHSHIR
+                            </label>
+                            {{ form.jshshir }}
+                            {% if form.jshshir.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.jshshir.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.faculty.id_for_label }}" class="form-label">
+                                <i class="bi bi-building"></i> Fakultet
+                            </label>
+                            {{ form.faculty }}
+                            {% if form.faculty.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.faculty.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.specialty.id_for_label }}" class="form-label">
+                                <i class="bi bi-book"></i> Yo'nalish
+                            </label>
+                            {{ form.specialty }}
+                            {% if form.specialty.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.specialty.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                <i class="bi bi-lock"></i> Parol
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.confirm_password.id_for_label }}" class="form-label">
+                                <i class="bi bi-lock-fill"></i> Parolni tasdiqlang
+                            </label>
+                            {{ form.confirm_password }}
+                            {% if form.confirm_password.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.confirm_password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus"></i> Ro'yxatdan o'tish
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Hisobingiz bormi?</p>
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-box-arrow-in-right"></i> Tizimga kirish
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="col-md-6 d-none d-md-flex align-items-center justify-content-center bg-gradient-primary text-white">
+            <div class="text-center">
+                <h1 class="display-4 mb-4">
+                    <i class="bi bi-mortarboard"></i> TEST-SINOV-UCUN
+                </h1>
+                <h2 class="mb-4">Talaba Boshqaruv Tizimi</h2>
+                <p class="lead mb-4">
+                    Talabalarni boshqarish, Excel orqali yuklash, statistikani kuzatish va boshqa ko'plab imkoniyatlar.
+                </p>
+                <div class="row text-start">
+                    <div class="col-md-6 mb-3">
+                        <h5><i class="bi bi-check-circle"></i> Asosiy imkoniyatlar:</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check"></i> Talaba qo'shish</li>
+                            <li><i class="bi bi-check"></i> Excel import/export</li>
+                            <li><i class="bi bi-check"></i> Fakultetlar boshqaruvi</li>
+                            <li><i class="bi bi-check"></i> Statistika</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5><i class="bi bi-shield-check"></i> Xavfsizlik:</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check"></i> Role-based access</li>
+                            <li><i class="bi bi-check"></i> Audit log</li>
+                            <li><i class="bi bi-check"></i> Session timeout</li>
+                            <li><i class="bi bi-check"></i> Login protection</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.form-control {
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-primary {
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 500;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Fakultet o'zgarganda yo'nalishlarni yuklash
+    $('#id_faculty').on('change', function() {
+        var facultyId = $(this).val();
+        var specialtySelect = $('#id_specialty');
+
+        // Tozalash
+        specialtySelect.empty();
+        specialtySelect.prop('disabled', true);
+
+        if (!facultyId) {
+            specialtySelect.append('<option value="">Avval fakultetni tanlang</option>');
+            return;
+        }
+
+        // AJAX so'rov
+        $.ajax({
+            url: '{% url "get_specialties" %}',
+            data: {
+                'faculty_id': facultyId
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data && data.length > 0) {
+                    specialtySelect.append('<option value="">Yo\'nalishni tanlang</option>');
+                    $.each(data, function(index, specialty) {
+                        specialtySelect.append('<option value="' + specialty.id + '">' + specialty.name + '</option>');
+                    });
+                    specialtySelect.prop('disabled', false);
+                } else {
+                    specialtySelect.append('<option value="">Bu fakultetda yo\'nalishlar yo\'q</option>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Xatolik:', error);
+                specialtySelect.append('<option value="">Yo\'nalishlarni yuklashda xatolik</option>');
+            }
+        });
+    });
+
+    // Sahifa yuklanganda agar fakultet tanlangan bo'lsa, yo'nalishlarni yuklash
+    var initialFaculty = $('#id_faculty').val();
+    if (initialFaculty) {
+        $('#id_faculty').trigger('change');
+    }
+});
+
+// Pasport maydoni uchun real-time katta harf
+document.getElementById('id_passport').addEventListener('input', function(e) {
+    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+    let value = this.value;
+    if (value.length > 2) {
+        let letters = value.substring(0, 2).replace(/[^A-Z]/g, '');
+        let numbers = value.substring(2).replace(/[^0-9]/g, '');
+        this.value = letters + numbers;
+    }
+});
+
+// JSHSHIR maydoni uchun faqat raqamlar
+document.getElementById('id_jshshir').addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+});
+</script>
+{% endblock %}

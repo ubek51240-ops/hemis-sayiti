@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        <!-- Login Panel -->
+        <div class="col-md-6 d-flex align-items-center justify-content-center bg-light">
+            <div class="card shadow-lg" style="width: 400px;">
+                <div class="card-header bg-success text-white text-center">
+                    <h4><i class="bi bi-briefcase"></i> Xodim sifatida ro'yxatdan o'tish</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Tanlash tugmalari -->
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="{% url 'register_student' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-mortarboard"></i> Talaba
+                        </a>
+                        <a href="{% url 'register_employee' %}" class="btn btn-success active">
+                            <i class="bi bi-briefcase"></i> Xodim
+                        </a>
+                    </div>
+                    <hr>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.full_name.id_for_label }}" class="form-label">
+                                <i class="bi bi-person"></i> Ism Familiya
+                            </label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.full_name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                <i class="bi bi-person-badge"></i> Login
+                            </label>
+                            {{ form.username }}
+                            <div class="form-text text-muted">
+                                <small>O'z loginingizni yarating</small>
+                            </div>
+                            {% if form.username.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                <i class="bi bi-envelope"></i> Email manzil
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                <i class="bi bi-telephone"></i> Telefon raqam
+                            </label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.phone.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                <i class="bi bi-lock"></i> Parol
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.confirm_password.id_for_label }}" class="form-label">
+                                <i class="bi bi-lock-fill"></i> Parolni tasdiqlang
+                            </label>
+                            {{ form.confirm_password }}
+                            {% if form.confirm_password.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.confirm_password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-person-plus"></i> Ro'yxatdan o'tish
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Hisobingiz bormi?</p>
+                        <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-box-arrow-in-right"></i> Tizimga kirish
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="col-md-6 d-none d-md-flex align-items-center justify-content-center bg-gradient-success text-white">
+            <div class="text-center">
+                <h1 class="display-4 mb-4">
+                    <i class="bi bi-briefcase"></i> TEST-SINOV-UCUN
+                </h1>
+                <h2 class="mb-4">Xodim Boshqaruv Tizimi</h2>
+                <p class="lead mb-4">
+                    Tizimda rol olish uchun ariza topshirish
+                </p>
+                <div class="alert alert-light text-dark" role="alert">
+                    <i class="bi bi-info-circle"></i> <strong>Xodim</strong> - Tizimda ishlash uchun rol olish
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.form-control {
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+}
+
+.form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.btn-success {
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 500;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Arizalar - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4><i class="bi bi-journal-bookmark"></i> Arizalar</h4>
+                    <form class="d-flex" method="get">
+                        <input type="hidden" name="type" value="{{ application_type }}">
+                        <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Ism, pasport yoki email" value="{{ search }}">
+                        <select name="status" class="form-select form-select-sm me-2">
+                            <option value="">Barchasi</option>
+                            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                            <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Qabul qilindi</option>
+                            <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rad etildi</option>
+                        </select>
+                        <button class="btn btn-light btn-sm" type="submit"><i class="bi bi-search"></i> Filtrlash</button>
+                    </form>
+                </div>
+
+                <!-- Tablar: Talaba va Xodim arizalari -->
+                <ul class="nav nav-tabs mt-3 mx-3">
+                    <li class="nav-item">
+                        <a class="nav-link {% if application_type == 'all' %}active{% endif %}" href="?type=all{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                            <i class="bi bi-people"></i> Barchasi
+                            <span class="badge bg-secondary">{{ total_count }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if application_type == 'student' %}active{% endif %}" href="?type=student{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                            <i class="bi bi-mortarboard"></i> Talabalar
+                            <span class="badge bg-primary">{{ student_count }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if application_type == 'employee' %}active{% endif %}" href="?type=employee{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                            <i class="bi bi-briefcase"></i> Xodimlar
+                            <span class="badge bg-success">{{ employee_count }}</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="card-body table-responsive">
+                    <!-- Jadval sarlavhasi - turga qarab o'zgaradi -->
+                    {% if application_type == 'employee' %}
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>F.I.Sh</th>
+                                <th>Email</th>
+                                <th>Telefon</th>
+                                <th>Holat</th>
+                                <th>Yuborilgan vaqti</th>
+                                <th>Amallar</th>
+                            </tr>
+                        </thead>
+                    {% else %}
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>F.I.Sh</th>
+                                <th>Pasport</th>
+                                <th>Email</th>
+                                <th>Telefon</th>
+                                <th>Fakultet</th>
+                                <th>Yo'nalish</th>
+                                <th>Holat</th>
+                                <th>Yuborilgan vaqti</th>
+                                <th>Amallar</th>
+                            </tr>
+                        </thead>
+                    {% endif %}
+                        <tbody>
+                            {% for application in applications %}
+                            <tr>
+                                <td>{{ application.id }}</td>
+                                <td>{{ application.full_name }}</td>
+                                {% if application_type != 'employee' %}
+                                <td>{{ application.passport }}</td>
+                                {% endif %}
+                                <td>{{ application.email }}</td>
+                                <td>{{ application.phone }}</td>
+                                {% if application_type != 'employee' %}
+                                <td>{{ application.faculty.name|default:'-' }}</td>
+                                <td>{{ application.specialty.name|default:'-' }}</td>
+                                {% endif %}
+                                <td>{{ application.get_status_display }}</td>
+                                <td>{{ application.submitted_at|date:'Y-m-d H:i' }}</td>
+                                <td>
+                                    <a href="{% url 'process_application' application.id %}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-pencil-square"></i> Ko'rish
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="{% if application_type == 'employee' %}7{% else %}10{% endif %}" class="text-center">
+                                    {% if application_type == 'employee' %}
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle"></i> Xodim arizalari topilmadi.
+                                        </div>
+                                    {% elif application_type == 'student' %}
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle"></i> Talaba arizalari topilmadi.
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle"></i> Hech qanday ariza topilmadi.
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include '_pagination.html' with page_obj=applications %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

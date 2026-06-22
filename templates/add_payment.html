@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% block title %}To'lov Qo'shish - {{ student.full_name }}{% endblock %}
+{% block content %}
+<div class="row">
+    <!-- Student Info Card -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5><i class="bi bi-person"></i> Talaba Ma'lumotlari</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>FIO:</strong></td>
+                        <td>{{ student.full_name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pasport:</strong></td>
+                        <td>{{ student.passport }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>JSHSHIR:</strong></td>
+                        <td>{{ student.jshshir }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HEMIS ID:</strong></td>
+                        <td>
+                            {% if student.hemis_id %}
+                                <span class="badge bg-success">{{ student.hemis_id }}</span>
+                            {% else %}
+                                <span class="badge bg-dark">Yo'q</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fakultet:</strong></td>
+                        <td>{{ student.faculty.name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mutaxassislik:</strong></td>
+                        <td>{{ student.specialty.name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Kontrakt:</strong></td>
+                        <td><span class="badge bg-warning text-dark">{{ contract_amount|floatformat:0 }} so'm</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>To'langan:</strong></td>
+                        <td><span class="badge bg-success">{{ total_paid|floatformat:0 }} so'm</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Qolgan qarz:</strong></td>
+                        <td>
+                            {% if remaining_debt > 0 %}
+                                <span class="badge bg-danger">{{ remaining_debt|floatformat:0 }} so'm</span>
+                            {% else %}
+                                <span class="badge bg-success">To'langan!</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                <a href="{% url 'accountant_dashboard' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-arrow-left"></i> Orqaga
+                </a>
+            </div>
+        </div>
+
+        <!-- Payment Summary Card -->
+        <div class="card mb-4 border-info">
+            <div class="card-header bg-info text-white">
+                <h6><i class="bi bi-calculator"></i> Hisob-kitob</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr class="table-warning">
+                        <td><strong>Kontrakt summasi:</strong></td>
+                        <td class="text-end">{{ contract_amount_words }}</td>
+                    </tr>
+                    <tr class="table-success">
+                        <td><strong>To'langan:</strong></td>
+                        <td class="text-end">{{ total_paid_words }}</td>
+                    </tr>
+                    <tr class="table-danger">
+                        <td><strong>Qolgan qarz:</strong></td>
+                        <td class="text-end">{{ remaining_debt_words }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Previous Payments -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="bi bi-clock-history"></i> Avvalgi To'lovlar</h5>
+            </div>
+            <div class="card-body">
+                {% if payments %}
+                    <div class="list-group">
+                        {% for payment in payments %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ payment.amount|floatformat:0 }} so'm</strong>
+                                <small class="text-muted">{{ payment.payment_date|date:"d.m.Y" }}</small>
+                            </div>
+                            <small class="text-muted">{{ payment.get_payment_type_display }}</small>
+                            {% if payment.description %}
+                                <br><small>{{ payment.description }}</small>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">Hali to'lov qo'shilmagan</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Payment Form -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-plus-circle"></i> Yangi To'lov Qo'shish</h5>
+            </div>
+            <div class="card-body">
+                <form method="post"
+                      data-offline-enabled="true"
+                      data-offline-label="To'lov"
+                      data-offline-type="payment">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">To'lov Summasi (so'm) *</label>
+                            <input type="number" name="amount" id="amount" class="form-control" step="0.01" min="0" required placeholder="Masalan: 1500000">
+                            <!-- Real vaqtda harf ko'rinishida -->
+                            <div id="amount-in-words" class="form-text text-primary fw-bold mt-1" style="font-size: 0.9rem;">
+                                <i class="bi bi-arrow-up-circle"></i> Son kiriting...
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="payment_type" class="form-label">To'lov Turi *</label>
+                            <select name="payment_type" id="payment_type" class="form-control" required>
+                                <option value="tuition">O'quv to'lovi</option>
+                                <option value="contract">Shartnoma to'lovi</option>
+                                <option value="other">Boshqa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="payment_date" class="form-label">To'lov Sanasi *</label>
+                            <input type="date" name="payment_date" id="payment_date" class="form-control" required value="{% now 'Y-m-d' %}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Izoh</label>
+                        <textarea name="description" id="description" class="form-control" rows="3" placeholder="To'lov haqida qo'shimcha ma'lumot..."></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i> To'lovni Saqlash
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// O'zbek tilida sonlarni so'zga aylantirish
+const UNITS = ['', 'bir', 'ikki', 'uch', 'to\'rt', 'besh', 'olti', 'yetti', 'sakkiz', 'to\'qqiz'];
+const TENS = ['', 'o\'n', 'yigirma', 'o\'ttiz', 'qirq', 'ellik', 'oltmish', 'yetmish', 'sakson', 'to\'qson'];
+const HUNDREDS = ['', 'bir yuz', 'ikki yuz', 'uch yuz', 'to\'rt yuz', 'besh yuz', 'olti yuz', 'yetti yuz', 'sakkiz yuz', 'to\'qqiz yuz'];
+const LARGE_UNITS = ['', 'ming', 'million', 'milliard'];
+
+function convertLessThanThousand(n) {
+    if (n === 0) return '';
+    let result = [];
+    let hundred = Math.floor(n / 100);
+    if (hundred > 0) result.push(HUNDREDS[hundred]);
+    let remainder = n % 100;
+    if (remainder > 0) {
+        let ten = Math.floor(remainder / 10);
+        let unit = remainder % 10;
+        if (ten > 0) result.push(TENS[ten]);
+        if (unit > 0) result.push(UNITS[unit]);
+    }
+    return result.join(' ');
+}
+
+function numberToWordsUzbek(n) {
+    if (n === 0) return 'nol';
+    if (n < 0) return 'minus ' + numberToWordsUzbek(-n);
+    let result = [];
+    let unitIndex = 0;
+    while (n > 0) {
+        let chunk = n % 1000;
+        if (chunk > 0) {
+            let chunkWords = convertLessThanThousand(chunk);
+            if (unitIndex > 0) chunkWords += ' ' + LARGE_UNITS[unitIndex];
+            result.push(chunkWords);
+        }
+        n = Math.floor(n / 1000);
+        unitIndex++;
+    }
+    return result.reverse().join(' ');
+}
+
+// Real vaqtda yangilash
+document.getElementById('amount').addEventListener('input', function() {
+    const amount = parseInt(this.value) || 0;
+    const wordsDiv = document.getElementById('amount-in-words');
+    if (amount > 0) {
+        const words = numberToWordsUzbek(amount);
+        wordsDiv.innerHTML = '<i class="bi bi-check-circle-fill"></i> <strong>' + words + ' so\'m</strong>';
+        wordsDiv.className = 'form-text text-success fw-bold mt-1';
+    } else {
+        wordsDiv.innerHTML = '<i class="bi bi-arrow-up-circle"></i> Son kiriting...';
+        wordsDiv.className = 'form-text text-primary fw-bold mt-1';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}HEMIS ID Qo'shish - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 30px 0;">
+    <div class="card" style="border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.12); border-radius: 14px; overflow: hidden;">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 40px; text-align: center;">
+            <h3 style="color: white; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                <i class="bi bi-card-list" style="font-size: 32px; margin-right: 12px;"></i> HEMIS ID Qo'shish
+            </h3>
+            <p style="color: rgba(255,255,255,0.85); margin: 12px 0 0 0; font-size: 16px;">Tasdiqlangan talabalarning HEMIS IDlarini kiritish</p>
+        </div>
+        <div class="card-body" style="padding: 40px;">
+            <!-- Qidirish shakli -->
+            <form method="get" style="margin-bottom: 30px;">
+                <div class="row">
+                    <div class="col-md-10">
+                        <input type="text" name="search" class="form-control" placeholder="Ism, Pasport, JSHSHIR yoki HEMIS ID bo'yicha qidiring..." value="{{ search_query }}" style="padding: 12px 15px; font-size: 14px; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100" style="padding: 12px 15px; font-size: 14px;">
+                            <i class="bi bi-search"></i> Qidirish
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Talabalar ro'yxati -->
+            {% if students %}
+                <div class="table-responsive">
+                    <table class="table table-hover" style="margin: 0;">
+                        <thead style="background-color: #f8f9fa;">
+                            <tr>
+                                <th style="padding: 15px; font-weight: 700; border-bottom: 2px solid #dee2e6;">To'liq Ism</th>
+                                <th style="padding: 15px; font-weight: 700; border-bottom: 2px solid #dee2e6;">Pasport</th>
+                                <th style="padding: 15px; font-weight: 700; border-bottom: 2px solid #dee2e6;">JSHSHIR</th>
+                                <th style="padding: 15px; font-weight: 700; border-bottom: 2px solid #dee2e6;">Fakultet</th>
+                                <th style="padding: 15px; font-weight: 700; border-bottom: 2px solid #dee2e6;">Mutaxassislik</th>
+                                <th style="padding: 15px; font-weight: 700; border-bottom: 2px solid #dee2e6;">HEMIS ID</th>
+                                <th style="padding: 15px; font-weight: 700; border-bottom: 2px solid #dee2e6;">Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                                <tr style="border-bottom: 1px solid #dee2e6;">
+                                    <td style="padding: 15px;">{{ student.full_name }}</td>
+                                    <td style="padding: 15px;">{{ student.passport }}</td>
+                                    <td style="padding: 15px;">{{ student.jshshir }}</td>
+                                    <td style="padding: 15px;">{{ student.faculty.name|truncatewords:3 }}</td>
+                                    <td style="padding: 15px;">{{ student.specialty.name|truncatewords:3 }}</td>
+                                    <td style="padding: 15px; min-width: 150px;">
+                                        {% if student.hemis_id %}
+                                            <span class="badge bg-success" style="font-size: 14px; padding: 8px 14px; border-radius: 6px;">{{ student.hemis_id }}</span>
+                                        {% else %}
+                                            <span class="badge bg-dark" style="font-size: 14px; padding: 8px 14px; border-radius: 6px;">Kiritilmagan</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 15px;">
+                                        <a href="{% url 'update_hemis_id' student.pk %}" class="btn btn-sm btn-primary" style="padding: 6px 12px; font-size: 13px;">
+                                            <i class="bi bi-pencil"></i> O'zgartirish
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info" style="border-left: 4px solid #17a2b8; background-color: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 6px;">
+                    <i class="bi bi-info-circle"></i> Tasdiqlangan talabalar topilmadi.
+                </div>
+            {% endif %}
+
+            <!-- Orqaga tugmasi -->
+            <div style="margin-top: 30px;">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="padding: 12px 30px; font-weight: 700;">
+                    <i class="bi bi-arrow-left"></i> Orqaga
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

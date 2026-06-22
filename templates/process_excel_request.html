@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Excel So'rovini Ko'rish - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="bi bi-file-earmark-excel"></i> Excel Yuklash So'rovi</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th width="30%">So'rov Yuborgan:</th>
+                        <td><strong>{{ excel_request.requested_by.username }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Sana:</th>
+                        <td>{{ excel_request.created_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sabab:</th>
+                        <td>{{ excel_request.reason }}</td>
+                    </tr>
+                    <tr>
+                        <th>Holat:</th>
+                        <td>
+                            {% if excel_request.status == 'pending' %}
+                                <span class="badge bg-warning">Kutilmoqda</span>
+                            {% elif excel_request.status == 'approved' %}
+                                <span class="badge bg-success">Tasdiqlandi</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rad etildi</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if excel_request.admin_comment %}
+                    <tr>
+                        <th>Admin Izohi:</th>
+                        <td>{{ excel_request.admin_comment }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if excel_request.approved_at %}
+                    <tr>
+                        <th>Tasdiqlangan Sana:</th>
+                        <td>{{ excel_request.approved_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th>Yuklash Soni:</th>
+                        <td>{{ excel_request.download_count }} marta</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5><i class="bi bi-pencil"></i> Tasdiqlash / Rad Etish</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Holat</label>
+                        <select name="status" class="form-control">
+                            <option value="pending" {% if excel_request.status == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                            <option value="approved" {% if excel_request.status == 'approved' %}selected{% endif %}>Tasdiqlandi</option>
+                            <option value="rejected" {% if excel_request.status == 'rejected' %}selected{% endif %}>Rad etildi</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Admin Izohi</label>
+                        <textarea name="admin_comment" class="form-control" rows="4">{{ excel_request.admin_comment }}</textarea>
+                        <small class="text-muted">Bu izohni operator ko'radi</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle"></i> Saqlash
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body">
+                <a href="{% url 'excel_requests_list' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-arrow-left"></i> Orqaga
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

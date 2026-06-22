@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% block title %}Talabani Tasdiqlash - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="bi bi-person-badge"></i> Talaba Ma'lumotlari</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th width="30%">Ism Familiya:</th>
+                        <td>{{ student.full_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Pasport:</th>
+                        <td><strong>{{ student.passport }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>JSHSHIR:</th>
+                        <td>{{ student.jshshir }}</td>
+                    </tr>
+                    <tr>
+                        <th>Kurs:</th>
+                        <td>{{ student.course }}-kurs</td>
+                    </tr>
+                    <tr>
+                        <th>Telefon:</th>
+                        <td>{{ student.phone }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fakultet:</th>
+                        <td>{{ student.faculty.name|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Mutaxassislik:</th>
+                        <td>{{ student.specialty.name|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Qo'shgan operator:</th>
+                        <td><strong>{{ student.created_by.username|default:"-" }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Holat:</th>
+                        <td>
+                            {% if student.status == 'pending' %}
+                                <span class="badge bg-warning">Kutilmoqda</span>
+                            {% elif student.status == 'approved' %}
+                                <span class="badge bg-success">Qabul qilindi</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rad etildi</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if student.operator_comment %}
+                    <tr class="table-info">
+                        <th><i class="bi bi-chat-left-text"></i> Operator izohi:</th>
+                        <td>{{ student.operator_comment }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if student.comment %}
+                    <tr class="table-warning">
+                        <th><i class="bi bi-chat-left-text"></i> Admin izohi:</th>
+                        <td>{{ student.comment }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if student.approved_at %}
+                    <tr>
+                        <th>Tasdiqlangan sana:</th>
+                        <td>{{ student.approved_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th>Qo'shilgan sana:</th>
+                        <td>{{ student.created_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Oxirgi o'zgartirish:</th>
+                        <td>{{ student.updated_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                </table>
+
+                <!-- Hujjatlar -->
+                <div class="mt-4">
+                    <h5 class="border-bottom pb-2"><i class="bi bi-file-earmark-text"></i> Talaba Hujjatlari</h5>
+                    <div class="row">
+                        {% if student.transcript %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <i class="bi bi-file-earmark-pdf"></i> Transkript
+                                </div>
+                                <div class="card-body text-center">
+                                    <a href="{{ student.transcript.url }}" target="_blank" class="btn btn-primary w-100">
+                                        <i class="bi bi-eye"></i> Ko'rish
+                                    </a>
+                                    <small class="text-muted d-block mt-2">{{ student.transcript.name|cut:"transcripts/" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if student.passport_scan %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <i class="bi bi-file-earmark-image"></i> Pasport Nusxasi
+                                </div>
+                                <div class="card-body text-center">
+                                    <a href="{{ student.passport_scan.url }}" target="_blank" class="btn btn-success w-100">
+                                        <i class="bi bi-eye"></i> Ko'rish
+                                    </a>
+                                    <small class="text-muted d-block mt-2">{{ student.passport_scan.name|cut:"passports/" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if not student.transcript and not student.passport_scan %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Hujjatlar yuklanmagan
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        {% if active_role != 'archive' %}
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5><i class="bi bi-pencil"></i> Holatni O'zgartirish</h5>
+            </div>
+            <div class="card-body">
+                {% if student.status != 'pending' %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> 
+                    <strong>Eslatma:</strong> Bu talaba allaqachon tasdiqlangan.
+                </div>
+                {% endif %}
+                
+                <form method="post" id="processForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Holat</label>
+                        <select name="status" class="form-control" id="statusSelect">
+                            <option value="pending" {% if student.status == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                            <option value="approved" {% if student.status == 'approved' %}selected{% endif %}>Qabul qilindi</option>
+                            <option value="rejected" {% if student.status == 'rejected' %}selected{% endif %}>Rad etildi</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Izoh (Operatorga ko'rinadi)</label>
+                        <textarea name="comment" class="form-control" rows="4" placeholder="Operator uchun izoh...">{{ student.comment }}</textarea>
+                        <small class="text-muted">Bu izohni operator ko'radi</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                        <i class="bi bi-check-circle"></i> Saqlash
+                    </button>
+                </form>
+                
+                <script>
+                // Double-click himoyasi
+                document.getElementById('processForm').addEventListener('submit', function(e) {
+                    var btn = document.getElementById('submitBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saqlanmoqda...';
+                });
+                </script>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card mt-3">
+            <div class="card-body">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-arrow-left"></i> Orqaga Qaytish
+                </a>
+            </div>
+        </div>
+
+        <!-- Kommentlar -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-chat-dots"></i> Kommentlar</h6>
+            </div>
+            <div class="card-body">
+                <div id="comments-list" class="mb-3">
+                    {% for comment in student.comments.all %}
+                    <div class="card mb-2 {% if comment.is_internal %}border-warning{% endif %}">
+                        <div class="card-body py-2 px-3">
+                            <div class="d-flex align-items-start gap-2">
+                                {% if comment.author.profile.avatar %}
+                                    <img src="{{ comment.author.profile.avatar.url }}" class="rounded-circle" width="32" height="32">
+                                {% else %}
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:32px;height:32px;font-size:0.8rem;">
+                                        {{ comment.author.username|slice:":1"|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>{{ comment.author.username }}</strong>
+                                        <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
+                                    </div>
+                                    <p class="mb-1 small">{{ comment.content }}</p>
+                                    {% if comment.is_internal %}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-lock"></i> Ichki</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted small mb-0">Hozircha kommentlar yo'q</p>
+                    {% endfor %}
+                </div>
+                <form id="comment-form" class="mt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="comment_type" value="student">
+                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                    <div class="mb-2">
+                        <textarea name="content" class="form-control" rows="2" placeholder="Komment yozing..." required></textarea>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="is_internal" id="isInternal">
+                        <label class="form-check-label small" for="isInternal">
+                            <i class="bi bi-lock"></i> Faqat adminlar ko'radi (ichki)
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary w-100">
+                        <i class="bi bi-send"></i> Yuborish
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('comment-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('{% url "add_comment" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {'X-CSRFToken': formData.get('csrfmiddlewaretoken')}
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const comment = data.comment;
+            const avatarHtml = comment.avatar
+                ? `<img src="${comment.avatar}" class="rounded-circle" width="32" height="32">`
+                : `<div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:32px;height:32px;font-size:0.8rem;">${comment.author[0]}</div>`;
+            const internalBadge = comment.is_internal
+                ? `<span class="badge bg-warning text-dark"><i class="bi bi-lock"></i> Ichki</span>`
+                : '';
+            const html = `
+                <div class="card mb-2 ${comment.is_internal ? 'border-warning' : ''}">
+                    <div class="card-body py-2 px-3">
+                        <div class="d-flex align-items-start gap-2">
+                            ${avatarHtml}
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <strong>${comment.author}</strong>
+                                    <small class="text-muted">${comment.created_at}</small>
+                                </div>
+                                <p class="mb-1 small">${comment.content}</p>
+                                ${internalBadge}
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('comments-list').insertAdjacentHTML('afterbegin', html);
+            this.reset();
+        }
+    });
+});
+</script>
+{% endblock %}

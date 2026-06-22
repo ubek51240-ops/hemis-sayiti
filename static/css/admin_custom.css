@@ -1,0 +1,138 @@
+/* Django Admin Panel Custom Styles - Simple and Clean */
+body {
+    background-color: #f8f9fa !important;
+}
+
+/* Main form styling */
+#content-main form {
+    background: #ffffff !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 8px !important;
+    margin: 20px auto !important;
+    max-width: 600px !important;
+    padding: 30px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+/* Form rows */
+.form-row {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    margin-bottom: 25px !important;
+    padding: 0 0 20px 0 !important;
+    border-bottom: 1px solid #e9ecef !important;
+    box-shadow: none !important;
+}
+
+/* Dark theme for admin panel */
+body[data-theme="dark"] .form-row {
+    border-bottom: 1px solid #4a5568 !important;
+}
+
+body[data-theme="dark"] .form-row input {
+    background-color: #2d3748 !important;
+    color: #ffffff !important;
+    border-color: #4a5568 !important;
+}
+
+body[data-theme="dark"] .form-row label {
+    color: #ffffff !important;
+}
+
+body[data-theme="dark"] .help {
+    color: #a0aec0 !important;
+}
+
+body[data-theme="dark"] #content-main form {
+    background-color: #2d3748 !important;
+    border-color: #4a5568 !important;
+}
+
+body[data-theme="dark"] .submit-row {
+    border-top: 1px solid #4a5568 !important;
+}
+
+.form-row:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+}
+
+/* Input fields - simple styling */
+.form-row input {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border: 1px solid #ced4da !important;
+    padding: 10px 12px !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    width: 100% !important;
+}
+
+.form-row input:focus {
+    border-color: #80bdff !important;
+    box-shadow: 0 0 0 2px rgba(0,123,255,.25) !important;
+    outline: none !important;
+}
+
+/* Labels */
+.form-row label {
+    color: #212529 !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+}
+
+/* Help text */
+.help {
+    color: #6c757d !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+}
+
+/* Submit button - simple */
+.submit-row {
+    text-align: center !important;
+    padding-top: 20px !important;
+    margin-top: 20px !important;
+}
+
+.submit-row input[type="submit"] {
+    background-color: #007bff !important;
+    color: #ffffff !important;
+    border: 1px solid #007bff !important;
+    padding: 10px 30px !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+}
+
+.submit-row input[type="submit"]:hover {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+}
+
+/* Error messages - simple */
+.errornote {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+    border: 1px solid #f5c6cb !important;
+    padding: 12px 16px !important;
+    border-radius: 4px !important;
+    margin-bottom: 16px !important;
+}
+
+.errorlist {
+    color: #dc3545 !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+}
+
+/* Page title */
+h1 {
+    color: #212529 !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+    margin-bottom: 24px !important;
+    font-size: 24px !important;
+}

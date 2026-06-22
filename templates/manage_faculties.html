@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% block title %}Fakultet Boshqaruvi - Test-sinov-ucun{% endblock %}
+{% block content %}
+<h2><i class="bi bi-building"></i> Fakultet va Mutaxassisliklarni Boshqarish</h2>
+<hr>
+
+<div class="row">
+    <!-- FAKULTET QO'SHISH VA RO'YXATI -->
+    <div class="col-md-6">
+        <!-- Yangi Fakultet Qo'shish -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="bi bi-plus-circle"></i> Yangi Fakultet Qo'shish</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Fakultet Nomi</label>
+                        <input type="text" name="faculty_name" class="form-control" 
+                               placeholder="Masalan: Kunduzgi" required>
+                    </div>
+                    <button type="submit" name="add_faculty" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> Fakultet Qo'shish
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Mavjud Fakultetlar -->
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="bi bi-list-ul"></i> Mavjud Fakultetlar</h5>
+            </div>
+            <div class="card-body">
+                {% if faculties %}
+                <div class="list-group">
+                    {% for faculty in faculties %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">
+                                    <i class="bi bi-building"></i> {{ faculty.name }}
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-collection"></i> {{ faculty.specialty_set.count }} ta mutaxassislik
+                                </small>
+                            </div>
+                            <div class="btn-group">
+                                <a href="{% url 'edit_faculty' faculty.id %}" 
+                                   class="btn btn-sm btn-warning" 
+                                   title="Tahrirlash">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'delete_faculty' faculty.id %}" 
+                                   class="btn btn-sm btn-danger" 
+                                   title="O'chirish"
+                                   onclick="return confirm('{{ faculty.name }} fakultetini o\'chirmoqchimisiz?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-exclamation-triangle"></i> Fakultetlar hali qo'shilmagan
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- MUTAXASSISLIK QO'SHISH VA RO'YXATI -->
+    <div class="col-md-6">
+        <!-- Yangi Mutaxassislik Qo'shish -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-plus-circle"></i> Yangi Mutaxassislik Qo'shish</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Fakultet</label>
+                        <select name="faculty_id" class="form-control" required>
+                            <option value="">Fakultetni tanlang...</option>
+                            {% for faculty in faculties %}
+                            <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mutaxassislik Nomi</label>
+                        <input type="text" name="specialty_name" class="form-control" 
+                               placeholder="Masalan: Amaliy matematika" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kontrakt Summasi (so'm)</label>
+                        <input type="number" name="contract_amount" class="form-control" 
+                               placeholder="Masalan: 1500000" min="0" step="1000" required>
+                        <small class="text-muted">Yoki keyinroq Super Admin belgilaydi</small>
+                    </div>
+                    <button type="submit" name="add_specialty" class="btn btn-success">
+                        <i class="bi bi-plus"></i> Mutaxassislik Qo'shish
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Mavjud Mutaxassisliklar -->
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5><i class="bi bi-list-ul"></i> Mavjud Mutaxassisliklar</h5>
+            </div>
+            <div class="card-body">
+                {% if specialties %}
+                <div class="list-group">
+                    {% for specialty in specialties %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">
+                                    <i class="bi bi-book"></i> {{ specialty.name }}
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-building"></i> {{ specialty.faculty.name }}
+                                </small><br>
+                                <small class="text-success">
+                                    <i class="bi bi-cash-coin"></i> Kontrakt: <strong>{{ specialty.contract_amount|floatformat:0 }} so'm</strong>
+                                </small>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#contractModal{{ specialty.id }}" title="Kontrakt summasini o'zgartirish">
+                                    <i class="bi bi-cash-coin"></i>
+                                </button>
+                                <a href="{% url 'edit_specialty' specialty.id %}" 
+                                   class="btn btn-sm btn-warning" 
+                                   title="Tahrirlash">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'delete_specialty' specialty.id %}" 
+                                   class="btn btn-sm btn-danger" 
+                                   title="O'chirish"
+                                   onclick="return confirm('{{ specialty.name }} mutaxassisligini o\'chirmoqchimisiz?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Kontrakt Summasi Modal -->
+                    <div class="modal fade" id="contractModal{{ specialty.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-info text-white">
+                                    <h5 class="modal-title"><i class="bi bi-cash-coin"></i> Kontrakt Summasi</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="post" action="{% url 'update_specialty_contract' specialty.id %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <h6>{{ specialty.name }}</h6>
+                                        <p class="text-muted">{{ specialty.faculty.name }}</p>
+                                        <div class="mb-3">
+                                            <label class="form-label">Kontrakt Summasi (so'm)</label>
+                                            <input type="number" name="contract_amount" class="form-control" 
+                                                   value="{{ specialty.contract_amount }}" min="0" step="1000" required>
+                                        </div>
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle"></i> Hozirgi summa: {{ specialty.contract_amount|floatformat:0 }} so'm
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check"></i> Saqlash
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-exclamation-triangle"></i> Mutaxassisliklar hali qo'shilmagan
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistika -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h3><i class="bi bi-building"></i> {{ faculties.count }}</h3>
+                <p>Jami Fakultetlar</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h3><i class="bi bi-book"></i> {{ specialties.count }}</h3>
+                <p>Jami Mutaxassisliklar</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

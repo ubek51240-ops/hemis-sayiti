@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% block title %}Talabani Tahrirlash - Test-sinov-ucun{% endblock %}
+
+{% block extra_css %}
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container {
+        width: 100% !important;
+    }
+    .select2-container--default .select2-selection--single {
+        height: 38px;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 36px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-warning text-dark">
+        <h4><i class="bi bi-pencil"></i> Talabani Tahrirlash</h4>
+    </div>
+    <div class="card-body">
+        {% if student.can_operator_edit %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> 
+                <strong>Eslatma:</strong> Admin tasdiqlaganidan keyin bu talabani o'zgartira olmaysiz.
+            </div>
+            
+            {% if student.comment %}
+            <div class="alert alert-warning">
+                <h5><i class="bi bi-chat-left-text"></i> Admin Izohi:</h5>
+                <p class="mb-0">{{ student.comment }}</p>
+                <small class="text-muted">
+                    <i class="bi bi-clock"></i> 
+                    {{ student.updated_at|date:"d.m.Y H:i" }}
+                </small>
+            </div>
+            {% endif %}
+            
+            <form method="post" id="studentForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Pasport</label>
+                        {{ form.passport }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">JSHSHIR</label>
+                        {{ form.jshshir }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Ism Familiya</label>
+                    {{ form.full_name }}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Kurs</label>
+                        {{ form.course }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Telefon</label>
+                        {{ form.phone }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Fakultet</label>
+                        {{ form.faculty }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Mutaxassislik</label>
+                    {{ form.specialty }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Transkript</label>
+                    {{ form.transcript }}
+                    {% if student.transcript %}
+                        <p class="mt-2"><a href="{{ student.transcript.url }}" target="_blank">Hujjatni ko'rish</a></p>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Pasport skani</label>
+                    {{ form.passport_scan }}
+                    {% if student.passport_scan %}
+                        <p class="mt-2"><a href="{{ student.passport_scan.url }}" target="_blank">Hujjatni ko'rish</a></p>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Qo'shimcha hujjatlar</label>
+                    {{ form.additional_documents }}
+                    {% if student.additional_documents %}
+                        <p class="mt-2"><a href="{{ student.additional_documents.url }}" target="_blank">Hujjatni ko'rish</a></p>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Izoh (Admin ko'radi)</label>
+                    <textarea name="operator_comment" class="form-control" rows="3">{{ student.operator_comment|default:"" }}</textarea>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-check-circle"></i> Yangilash
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Bekor qilish
+                    </a>
+                </div>
+            </form>
+        {% else %}
+            {% if student.comment %}
+            <div class="alert alert-warning">
+                <h5><i class="bi bi-chat-left-text"></i> Admin Izohi:</h5>
+                <p class="mb-0">{{ student.comment }}</p>
+                <small class="text-muted">
+                    <i class="bi bi-clock"></i> 
+                    {{ student.updated_at|date:"d.m.Y H:i" }}
+                </small>
+            </div>
+            {% endif %}
+            
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i> 
+                <strong>Tahrirlab bo'lmaydi!</strong> Bu talaba admin tomonidan tasdiqlangan.
+            </div>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Orqaga
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+{% block extra_js %}
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Select2 ni ishga tushirish
+    $('#id_specialty').select2({
+        placeholder: 'Mutaxassislikni tanlang yoki qidiring...',
+        allowClear: true,
+        width: '100%'
+    });
+    
+    $('#id_faculty').select2({
+        placeholder: 'Fakultetni tanlang...',
+        allowClear: true,
+        width: '100%'
+    });
+    
+    // Fakultet o'zgarganda mutaxassisliklarni yuklash
+    $('#id_faculty').on('change', function() {
+        const facultyId = this.value;
+        const specialtySelect = $('#id_specialty');
+        
+        specialtySelect.empty().append('<option value="">Tanlang...</option>');
+        specialtySelect.prop('disabled', true);
+        
+        if (facultyId) {
+            fetch(`/get-specialties/?faculty_id=${facultyId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        specialtySelect.prop('disabled', false);
+                        
+                        data.forEach(specialty => {
+                            const option = new Option(specialty.name, specialty.id, false, false);
+                            specialtySelect.append(option);
+                        });
+                        
+                        // Joriy mutaxassislikni tanlash
+                        {% if student.specialty %}
+                        specialtySelect.val('{{ student.specialty.id }}').trigger('change');
+                        {% endif %}
+                    }
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+    });
+    
+    // Sahifa yuklanganda joriy fakultet bo'yicha mutaxassisliklarni yuklash
+    const facultySelect = document.getElementById('id_faculty');
+    if (facultySelect && facultySelect.value) {
+        $('#id_faculty').trigger('change');
+    }
+});
+
+// Pasport maydoni uchun real-time katta harf
+document.getElementById('id_passport').addEventListener('input', function(e) {
+    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+});
+
+// JSHSHIR maydoni uchun faqat raqamlar
+document.getElementById('id_jshshir').addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Audit Loglar - Test-sinov-ucun{% endblock %}
+{% block content %}
+<h2><i class="bi bi-activity"></i> Barcha Amallar (Audit Log)</h2>
+<hr>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <input type="text" name="search" class="form-control" placeholder="Ism, familiya, pasport, talaba ID yoki amal bo'yicha qidiring..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Qidirish
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'audit_logs' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-x-circle"></i> Tozalash
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="?download=excel{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-success w-100">
+                    <i class="bi bi-download"></i> Yuklab olish
+                </a>
+            </div>
+        </form>
+        
+        {% if search_query %}
+        <div class="alert alert-info mt-3">
+            <i class="bi bi-info-circle"></i> 
+            <strong>Qidiruv:</strong> "{{ search_query }}" bo'yicha {{ logs|length }} ta topildi
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Vaqt</th>
+                        <th>Foydalanuvchi</th>
+                        <th>Amal</th>
+                        <th>Tafsilotlar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.id }}</td>
+                        <td>{{ log.timestamp|date:"d.m.Y H:i:s" }}</td>
+                        <td>{{ log.user.username|default:"System" }}</td>
+                        <td><strong>{{ log.action }}</strong></td>
+                        <td>{{ log.details }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">Loglar topilmadi</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% block title %}Excel Import Sozlamalari - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header with custom gradient and shadow -->
+    <div class="card mb-4 border-0 shadow-lg" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 16px;">
+        <div class="card-body p-4 text-white d-flex align-items-center justify-content-between">
+            <div>
+                <h2 class="mb-1" style="font-weight: 700; letter-spacing: -0.5px;"><i class="bi bi-gear-fill me-2"></i> Excel Import Sozlamalari</h2>
+                <p class="mb-0 opacity-75">Tizimga talabalarni Excel orqali yuklash ustunlari tartibini va nomlanishini boshqaring.</p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="btn btn-light btn-sm px-3 py-2 border-0 shadow-sm hover-lift" style="border-radius: 8px; font-weight: 600; color: #1e3c72;">
+                <i class="bi bi-arrow-left me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Settings Form -->
+        <div class="col-lg-7 mb-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px; transition: all 0.3s ease;">
+                <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
+                    <h5 class="card-title mb-0" style="font-weight: 700; color: #333;"><i class="bi bi-sliders me-2 text-primary"></i> Ustunlar Mosligi</h5>
+                </div>
+                <div class="card-body px-4 py-3">
+                    <form method="post" id="settingsForm" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="alert alert-warning border-0 shadow-sm mb-4" style="background-color: #fff9e6; border-radius: 12px; color: #856404;">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Diqqat:</strong> Har bir ustun uchun faqat bitta harf (masalan: <strong>A</strong>) yoki ikkita harf (masalan: <strong>AA</strong>) kiriting. Ustun harflari takrorlanmasligi shart.
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger border-0 mb-4" style="border-radius: 12px;">
+                                {% for error in form.non_field_errors %}
+                                    <p class="mb-0">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="row g-3">
+                            <!-- Full Name -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-weight: 600; color: #555;">{{ form.full_name_col.label }}</label>
+                                    {{ form.full_name_col }}
+                                    {% if form.full_name_col.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.full_name_col.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Passport -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-weight: 600; color: #555;">{{ form.passport_col.label }}</label>
+                                    {{ form.passport_col }}
+                                    {% if form.passport_col.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.passport_col.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- JSHSHIR -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-weight: 600; color: #555;">{{ form.jshshir_col.label }}</label>
+                                    {{ form.jshshir_col }}
+                                    {% if form.jshshir_col.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.jshshir_col.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Course -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-weight: 600; color: #555;">{{ form.course_col.label }}</label>
+                                    {{ form.course_col }}
+                                    {% if form.course_col.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.course_col.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-weight: 600; color: #555;">{{ form.phone_col.label }}</label>
+                                    {{ form.phone_col }}
+                                    {% if form.phone_col.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.phone_col.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Faculty -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-weight: 600; color: #555;">{{ form.faculty_col.label }}</label>
+                                    {{ form.faculty_col }}
+                                    {% if form.faculty_col.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.faculty_col.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Specialty -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-weight: 600; color: #555;">{{ form.specialty_col.label }}</label>
+                                    {{ form.specialty_col }}
+                                    {% if form.specialty_col.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.specialty_col.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Operator Comment -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-weight: 600; color: #555;">{{ form.operator_comment_col.label }}</label>
+                                    {{ form.operator_comment_col }}
+                                    {% if form.operator_comment_col.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.operator_comment_col.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Is Active -->
+                            <div class="col-12 mt-3">
+                                <div class="form-check form-switch mb-3 p-0" style="padding-left: 2.5em !important;">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label ms-2" style="font-weight: 600; color: #555;">{{ form.is_active.label }}</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" style="color: #eee;">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" id="resetToDefaultBtn" class="btn btn-outline-secondary px-4" style="border-radius: 8px; font-weight: 600;">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Standart holat
+                            </button>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border: none; border-radius: 8px; font-weight: 600;">
+                                <i class="bi bi-save me-1"></i> Sozlamalarni saqlash
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Mockup & Information -->
+        <div class="col-lg-5 mb-4">
+            <!-- Visual Mockup Spreadsheet -->
+            <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+                <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
+                    <h5 class="card-title mb-0" style="font-weight: 700; color: #333;"><i class="bi bi-grid-3x3-gap me-2 text-success"></i> Jonli excel tuzilishi ko'rinishi</h5>
+                </div>
+                <div class="card-body px-4 py-3">
+                    <p class="text-muted small mb-3">Siz kiritgan ustun tartibiga mos ravishda Excel faylining ko'rinishi qanday bo'lishini ko'ring:</p>
+                    
+                    <div class="table-responsive border rounded-3 overflow-hidden shadow-xs">
+                        <table class="table table-bordered mb-0 text-center" id="mockSpreadsheetTable" style="min-width: 320px; font-size: 13px;">
+                            <thead>
+                                <tr class="bg-light text-muted" id="mockSpreadsheetHeaderLetters">
+                                    <!-- Dynamic header letters -->
+                                </tr>
+                                <tr style="background-color: #f1f3f9; font-weight: bold; color: #333;" id="mockSpreadsheetHeaderLabels">
+                                    <!-- Dynamic field labels -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="text-muted">
+                                    <!-- Dummy row data -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Static Instructions -->
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
+                    <h5 class="card-title mb-0" style="font-weight: 700; color: #333;"><i class="bi bi-lightbulb me-2 text-warning"></i> Foydali maslahatlar</h5>
+                </div>
+                <div class="card-body px-4 py-3 text-muted" style="font-size: 14px; line-height: 1.6;">
+                    <ul class="ps-3 mb-0">
+                        <li class="mb-2">Operatorlar yuklaydigan fayl sarlavha qatoridan keyin ma'lumotlar boshlanishini talab qiladi.</li>
+                        <li class="mb-2">Faqat ingliz alifbosidagi harflarni ishlating (<strong>A, B, C, ..., Z, AA, AB, ...</strong>).</li>
+                        <li class="mb-2">Agar siz ustunlarni o'zgartirsangiz, operator yuklab oladigan <strong>namuna template (ko'rsatma) excel fayli</strong> ham avtomatik tarzda yangi ustunlar tartibiga moslashadi.</li>
+                        <li>Yuklashdagi xatoliklarni kamaytirish uchun ustun nomlari bir xil bo'lishi taqiqlangan.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        padding: 10px 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .form-control:focus {
+        border-color: #2a5298;
+        box-shadow: 0 0 0 0.2rem rgba(42, 82, 152, 0.15);
+    }
+    #mockSpreadsheetTable th, #mockSpreadsheetTable td {
+        padding: 8px 12px;
+        vertical-align: middle;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fields = [
+        { id: 'id_full_name_col', label: 'Ism Familiya', dummy: 'Aliyev Ali' },
+        { id: 'id_passport_col', label: 'Pasport', dummy: 'AA1234567' },
+        { id: 'id_jshshir_col', label: 'JSHSHIR', dummy: '12345678901234' },
+        { id: 'id_course_col', label: 'Kurs', dummy: '3' },
+        { id: 'id_phone_col', label: 'Telefon', dummy: '998901234567' },
+        { id: 'id_faculty_col', label: 'Fakultet', dummy: 'KT fakulteti' },
+        { id: 'id_specialty_col', label: 'Mutaxassislik', dummy: 'Komp. Injiniring' },
+        { id: 'id_operator_comment_col', label: 'Izoh', dummy: 'A\'lo talaba' }
+    ];
+
+    function excelColToInt(col) {
+        let name = col.toUpperCase().trim();
+        let number = 0;
+        for (let i = 0; i < name.length; i++) {
+            number = number * 26 + (name.charCodeAt(i) - 64);
+        }
+        return number;
+    }
+
+    function updateLivePreview() {
+        const headerLettersRow = document.getElementById('mockSpreadsheetHeaderLetters');
+        const headerLabelsRow = document.getElementById('mockSpreadsheetHeaderLabels');
+        const tbody = document.querySelector('#mockSpreadsheetTable tbody');
+        
+        let cols = [];
+        
+        fields.forEach(field => {
+            const input = document.getElementById(field.id);
+            if (input) {
+                const val = input.value.trim().toUpperCase();
+                if (val && /^[A-Z]{1,2}$/.test(val)) {
+                    let colIdx = excelColToInt(val);
+                    cols.push({
+                        letter: val,
+                        index: colIdx,
+                        label: field.label,
+                        dummy: field.dummy
+                    });
+                }
+            }
+        });
+        
+        // Sort by Excel column order
+        cols.sort((a, b) => a.index - b.index);
+        
+        // Render rows
+        headerLettersRow.innerHTML = '';
+        headerLabelsRow.innerHTML = '';
+        tbody.innerHTML = '';
+        
+        let dummyRowHTML = '';
+        
+        if (cols.length === 0) {
+            headerLettersRow.innerHTML = '<th class="text-danger">Noto\'g\'ri ustunlar</th>';
+            headerLabelsRow.innerHTML = '<td class="text-danger">Ma\'lumotlar mavjud emas</td>';
+            return;
+        }
+        
+        cols.forEach(col => {
+            // Header Letter
+            const thLetter = document.createElement('th');
+            thLetter.className = 'bg-light text-muted';
+            thLetter.style.fontWeight = 'bold';
+            thLetter.innerText = col.letter;
+            headerLettersRow.appendChild(thLetter);
+            
+            // Header Label
+            const thLabel = document.createElement('th');
+            thLabel.innerText = col.label;
+            headerLabelsRow.appendChild(thLabel);
+            
+            // Dummy Row
+            dummyRowHTML += `<td class="text-muted small">${col.dummy}</td>`;
+        });
+        
+        tbody.innerHTML = `<tr>${dummyRowHTML}</tr>`;
+    }
+
+    // Input listeners
+    fields.forEach(field => {
+        const input = document.getElementById(field.id);
+        if (input) {
+            input.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+                updateLivePreview();
+            });
+        }
+    });
+
+    // Default button action
+    document.getElementById('resetToDefaultBtn').addEventListener('click', function() {
+        const defaults = {
+            'id_full_name_col': 'A',
+            'id_passport_col': 'B',
+            'id_jshshir_col': 'C',
+            'id_course_col': 'D',
+            'id_phone_col': 'E',
+            'id_faculty_col': 'F',
+            'id_specialty_col': 'G',
+            'id_operator_comment_col': 'H'
+        };
+        
+        Object.keys(defaults).forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.value = defaults[id];
+            }
+        });
+        
+        updateLivePreview();
+    });
+
+    // Init live preview
+    updateLivePreview();
+});
+</script>
+{% endblock %}

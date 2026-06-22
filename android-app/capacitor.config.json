@@ -1,0 +1,35 @@
+{
+  "appId": "uz.talabaqabul.app",
+  "appName": "Test-sinov-ucun",
+  "webDir": "www",
+  "server": {
+    "url": "https://nonracial-seldomly-bryce.ngrok-free.dev",
+    "cleartext": true,
+    "androidScheme": "https",
+    "allowNavigation": [
+      "nonracial-seldomly-bryce.ngrok-free.dev",
+      "*.ngrok-free.dev",
+      "*.ngrok.io",
+      "hemis-sayiti.onrender.com"
+    ]
+  },
+  "android": {
+    "allowMixedContent": true,
+    "webContentsDebuggingEnabled": true,
+    "backgroundColor": "#1e3a8a"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#1e3a8a",
+      "androidSplashResourceName": "splash",
+      "showSpinner": true,
+      "androidSpinnerStyle": "large",
+      "spinnerColor": "#ffffff"
+    },
+    "StatusBar": {
+      "style": "dark",
+      "backgroundColor": "#1e3a8a"
+    }
+  }
+}

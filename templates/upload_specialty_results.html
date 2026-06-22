@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Mutaxassislik Excel Yuklash Natijalari - Test-sinov-ucun{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h4><i class="bi bi-file-earmark-check"></i> Mutaxassislik Excel Yuklash Natijalari</h4>
+    </div>
+    <div class="card-body">
+        <!-- Umumiy statistika -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h2>{{ added_specialties|length }}</h2>
+                        <p class="mb-0">Muvaffaqiyatli qo'shildi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h2>{{ duplicate_specialties|length }}</h2>
+                        <p class="mb-0">Allaqachon mavjud</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h2>{{ failed_specialties|length }}</h2>
+                        <p class="mb-0">Qo'shilmadi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Muvaffaqiyatli qo'shilganlar -->
+        {% if added_specialties %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-check-circle"></i> Muvaffaqiyatli qo'shilgan mutaxassisliklar ({{ added_specialties|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Qator</th>
+                                <th>Fakultet Nomi</th>
+                                <th>Mutaxassislik Nomi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for spec in added_specialties %}
+                            <tr>
+                                <td>{{ spec.row }}</td>
+                                <td>{{ spec.faculty_name }}</td>
+                                <td><strong>{{ spec.specialty_name }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Dublikat mutaxassisliklar -->
+        {% if duplicate_specialties %}
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white">
+                <h5><i class="bi bi-exclamation-triangle"></i> Allaqachon mavjud mutaxassisliklar ({{ duplicate_specialties|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i> 
+                    Quyidagi mutaxassisliklar bazada mavjud bo'lgani uchun qo'shilmadi:
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Qator</th>
+                                <th>Fakultet Nomi</th>
+                                <th>Mutaxassislik Nomi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for spec in duplicate_specialties %}
+                            <tr>
+                                <td>{{ spec.row }}</td>
+                                <td>{{ spec.faculty_name }}</td>
+                                <td>{{ spec.specialty_name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Xatoliklar -->
+        {% if failed_specialties %}
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5><i class="bi bi-x-circle"></i> Xatoliklar ({{ failed_specialties|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Qator</th>
+                                <th>Xatolik sababi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for spec in failed_specialties %}
+                            <tr>
+                                <td>{{ spec.row }}</td>
+                                <td><strong class="text-danger">{{ spec.reason }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Tugmalar -->
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'upload_specialty_excel' %}" class="btn btn-primary">
+                <i class="bi bi-upload"></i> Yangi fayl yuklash
+            </a>
+            <a href="{% url 'manage_faculties' %}" class="btn btn-secondary">
+                <i class="bi bi-bookmark"></i> Mutaxassisliklarni boshqarish
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn btn-info">
+                <i class="bi bi-house"></i> Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

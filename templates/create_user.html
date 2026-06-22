@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% block title %}Yangi Foydalanuvchi - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white py-3">
+                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Yangi Foydalanuvchi Yaratish</h4>
+            </div>
+            <div class="card-body p-0">
+                <!-- Form Errors -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger m-3">
+                    {% for error in form.non_field_errors %}
+                        <i class="bi bi-exclamation-triangle"></i> {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" id="user_form" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="p-3 bg-light border-bottom">
+                        <p class="text-muted mb-0">Avval login, parol va rol kiriting. Keyin boshqa sozlamalarni tahrirlash mumkin.</p>
+                    </div>
+
+                    <fieldset class="border-0">
+                        <!-- Username -->
+                        <div class="form-row p-3 border-bottom hover-bg-light">
+                            <div class="d-flex align-items-start gap-3">
+                                <label class="fw-bold text-nowrap" style="min-width: 180px;">
+                                    <span class="text-danger">*</span> Username:
+                                </label>
+                                <div class="flex-grow-1">
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help text-muted small mt-1">
+                                        Majburiy. 150 ta belgidan kam. Faqat harflar, raqamlar va @/./+/-/_
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Password -->
+                        <div class="form-row p-3 border-bottom hover-bg-light">
+                            <div class="d-flex align-items-start gap-3">
+                                <label class="fw-bold text-nowrap" style="min-width: 180px;">
+                                    <span class="text-danger">*</span> Parol:
+                                </label>
+                                <div class="flex-grow-1">
+                                    {{ form.password }}
+                                    {% if form.password.errors %}
+                                        <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help text-muted small mt-1">
+                                        <ul class="mb-0 ps-3">
+                                            <li>Parol boshqa shaxsiy ma'lumotlaringizga o'xshash bo'lmasligi kerak</li>
+                                            <li>Kamida 8 ta belgi bo'lishi kerak</li>
+                                            <li>Ommabop parol bo'lmasligi kerak</li>
+                                            <li>Faqat raqamlardan iborat bo'lmasligi kerak</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-row p-3 border-bottom hover-bg-light">
+                            <div class="d-flex align-items-start gap-3">
+                                <label class="fw-bold text-nowrap" style="min-width: 180px;">
+                                    <span class="text-danger">*</span> Parolni tasdiqlash:
+                                </label>
+                                <div class="flex-grow-1">
+                                    {{ form.confirm_password }}
+                                    {% if form.confirm_password.errors %}
+                                        <div class="text-danger small mt-1">{{ form.confirm_password.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help text-muted small mt-1">
+                                        Tasdiqlash uchun avvalgi parolni qayta kiriting.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="form-row p-3 border-bottom hover-bg-light">
+                            <div class="d-flex align-items-start gap-3">
+                                <label class="fw-bold text-nowrap" style="min-width: 180px;">
+                                    <span class="text-danger">*</span> Rol:
+                                </label>
+                                <div class="flex-grow-1">
+                                    {{ form.role }}
+                                    {% if form.role.errors %}
+                                        <div class="text-danger small mt-1">{{ form.role.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help text-muted small mt-1">
+                                        Foydalanuvchi tizimdagi vazifasini tanlang.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- First Name -->
+                        <div class="form-row p-3 border-bottom hover-bg-light bg-white">
+                            <div class="d-flex align-items-start gap-3">
+                                <label class="fw-bold text-nowrap" style="min-width: 180px;">
+                                    Ism:
+                                </label>
+                                <div class="flex-grow-1">
+                                    <input type="text" name="first_name" class="form-control" placeholder="Ism">
+                                    <div class="help text-muted small mt-1">Ixtiyoriy</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="form-row p-3 border-bottom hover-bg-light bg-white">
+                            <div class="d-flex align-items-start gap-3">
+                                <label class="fw-bold text-nowrap" style="min-width: 180px;">
+                                    Familiya:
+                                </label>
+                                <div class="flex-grow-1">
+                                    <input type="text" name="last_name" class="form-control" placeholder="Familiya">
+                                    <div class="help text-muted small mt-1">Ixtiyoriy</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="form-row p-3 border-bottom hover-bg-light bg-white">
+                            <div class="d-flex align-items-start gap-3">
+                                <label class="fw-bold text-nowrap" style="min-width: 180px;">
+                                    Telefon:
+                                </label>
+                                <div class="flex-grow-1">
+                                    <input type="text" name="phone" class="form-control" placeholder="+998901234567">
+                                    <div class="help text-muted small mt-1">Ixtiyoriy</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-row p-3 hover-bg-light bg-white">
+                            <div class="d-flex align-items-start gap-3">
+                                <label class="fw-bold text-nowrap" style="min-width: 180px;">
+                                    Email:
+                                </label>
+                                <div class="flex-grow-1">
+                                    <input type="email" name="email" class="form-control" placeholder="email@example.com">
+                                    <div class="help text-muted small mt-1">Ixtiyoriy</div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <!-- Submit Row -->
+                    <div class="submit-row p-3 bg-light border-top d-flex gap-2 justify-content-between">
+                        <a href="{% url 'manage_users' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Orqaga
+                        </a>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success" name="_save">
+                                <i class="bi bi-check-circle"></i> Saqlash
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-bg-light:hover {
+    background-color: #f8f9fa !important;
+}
+.form-row input, .form-row select {
+    width: 100%;
+    max-width: 400px;
+}
+.help ul {
+    margin-bottom: 0;
+}
+
+/* Form border removal for clean look */
+.form-row {
+    border: none !important;
+    box-shadow: none !important;
+}
+.form-row input, 
+.form-row select, 
+.form-row .form-control {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 0.375rem !important;
+    box-shadow: none !important;
+    color: #212529 !important;
+    background-color: #ffffff !important;
+}
+
+/* Kuchaytirilgan CSS - barcha theme larni bekor qilish */
+.form-row input[type="text"],
+.form-row input[type="password"],
+.form-row input[type="email"],
+.form-row input[type="number"],
+.form-row select {
+    color: #212529 !important;
+    background-color: #ffffff !important;
+}
+
+/* Placeholder rangi */
+.form-row input::placeholder,
+.form-row select::placeholder {
+    color: #6c757d !important;
+}
+
+.form-row input:focus, 
+.form-row select:focus, 
+.form-row .form-control:focus {
+    border-color: #86b7fe !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+    color: #212529 !important;
+    background-color: #ffffff !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Barcha input va select larni topish va ranglarini o'zgartirish
+    const inputs = document.querySelectorAll('input[type="text"], input[type="password"], input[type="email"], input[type="number"], select');
+    inputs.forEach(function(input) {
+        input.style.setProperty('color', '#212529', 'important');
+        input.style.setProperty('background-color', '#ffffff', 'important');
+        input.style.setProperty('border', '1px solid #dee2e6', 'important');
+        
+        // Focus holatida ham ranglarni saqlash
+        input.addEventListener('focus', function() {
+            this.style.setProperty('color', '#212529', 'important');
+            this.style.setProperty('background-color', '#ffffff', 'important');
+        });
+        
+        // Input yozilganda rangni saqlash
+        input.addEventListener('input', function() {
+            this.style.setProperty('color', '#212529', 'important');
+            this.style.setProperty('background-color', '#ffffff', 'important');
+        });
+    });
+});
+</script>
+{% endblock %}

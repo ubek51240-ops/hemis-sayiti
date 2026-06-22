@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Email sozlamasini tahrirlash - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-envelope-gear"></i> Email sozlamasini tahrirlash</h2>
+        <a href="{% url 'email_settings' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Orqaga
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header bg-warning">
+            <h5 class="mb-0"><i class="bi bi-pencil-square"></i> {{ setting.email }}
+                {% if setting.is_active %}
+                    <span class="badge bg-success">Faol</span>
+                {% else %}
+                    <span class="badge bg-secondary">Nofaol</span>
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Email manzili</label>
+                    <input type="email" name="email" class="form-control" value="{{ setting.email }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Email paroli (App Password)</label>
+                    <input type="password" name="password" class="form-control"
+                           placeholder="Bo'sh qoldirilsa eski parol saqlanadi">
+                    <small class="text-muted">Faqat parolni almashtirmoqchi bo'lsangiz to'ldiring. Bo'sh qoldirilsa eski parol saqlanadi.</small>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label fw-semibold">SMTP server</label>
+                        <input type="text" name="smtp_host" class="form-control" value="{{ setting.smtp_host }}" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-semibold">SMTP port</label>
+                        <input type="number" name="smtp_port" class="form-control" value="{{ setting.smtp_port }}" required>
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input type="checkbox" name="use_tls" id="use_tls_edit" class="form-check-input"
+                           {% if setting.use_tls %}checked{% endif %}>
+                    <label for="use_tls_edit" class="form-check-label">TLS ishlatish</label>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="{% url 'email_settings' %}" class="btn btn-secondary">Bekor qilish</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Saqlash
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,807 @@
+    {% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Test-sinov-ucun{% endblock %}</title>
+    <!-- PWA -->
+    <meta name="theme-color" content="#0d6efd">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Test-sinov-ucun">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%232c3e50'>H</text></svg>">
+
+    <!-- FOUC oldini olish: theme attributini sahifa render bo'lishidan oldin o'rnatish -->
+    <script>
+        // Theme ni darhol o'rnatish (FOUC oldini olish uchun)
+        (function() {
+            try {
+                var theme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {}
+        })();
+    </script>
+    
+    <!-- setTheme funksiyasi - BUTTONLAR ISHLASHI UCHUN Zarur -->
+    <script>
+        // Global setTheme function - INLINE (har qanday xolatda ishlaydi)
+        function setTheme(theme) {
+            console.log('>>> setTheme called:', theme);
+            try {
+                // Save to localStorage
+                localStorage.setItem('theme', theme);
+                
+                // Update HTML and BODY attributes
+                document.documentElement.setAttribute('data-theme', theme);
+                if (document.body) {
+                    document.body.setAttribute('data-theme', theme);
+                }
+                
+                // Update button states
+                var lightBtn = document.getElementById('light-theme');
+                var darkBtn = document.getElementById('dark-theme');
+                if (lightBtn && darkBtn) {
+                    if (theme === 'dark') {
+                        lightBtn.classList.remove('active', 'btn-primary');
+                        lightBtn.classList.add('btn-outline-primary');
+                        darkBtn.classList.remove('btn-outline-dark');
+                        darkBtn.classList.add('active', 'btn-dark');
+                    } else {
+                        lightBtn.classList.remove('btn-outline-primary');
+                        lightBtn.classList.add('active', 'btn-primary');
+                        darkBtn.classList.remove('active', 'btn-dark');
+                        darkBtn.classList.add('btn-outline-dark');
+                    }
+                }
+                
+                console.log('>>> Theme switched to:', theme);
+            } catch (e) {
+                console.error('Theme switch error:', e);
+            }
+        }
+    </script>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts - Inter (modern, professional) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20260512-3">
+    
+    <style>
+        /* ============ MODERN DESIGN - YANGI DIZAYN ============ */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fb;
+            color: #1f2937;
+            transition: background-color 0.4s ease, color 0.3s ease;
+        }
+
+        /* ============ DARK MODE SMOOTH TRANSITIONS ============ */
+        /* Barcha asosiy elementlar uchun yumshoq o'tish */
+        .card, .navbar, .sidebar, .table, .table thead th, .table td,
+        .form-control, .form-select, .btn, .dropdown-menu, .dropdown-item,
+        .badge, .alert, .modal-content, .nav-tabs, .nav-link,
+        .card-header, .card-body, .card-footer {
+            transition: background-color 0.35s ease,
+                        color 0.25s ease,
+                        border-color 0.35s ease,
+                        box-shadow 0.25s ease !important;
+        }
+
+        /* Theme toggle tugmalari uchun aniq animatsiya */
+        #light-theme, #dark-theme {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        /* Theme switch paytida barcha elementlar bir vaqtda o'zgarishi uchun */
+        html.theme-switching * {
+            transition: background-color 0.4s ease,
+                        color 0.3s ease,
+                        border-color 0.4s ease !important;
+        }
+
+        /* Icon o'tish animatsiyasi */
+        .bi {
+            transition: transform 0.2s ease, color 0.25s ease;
+        }
+
+        /* Sidebar - chiroyli gradient */
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+        .sidebar a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 11px 20px;
+            display: block;
+            transition: all 0.25s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+        .sidebar a:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #ffffff;
+            border-left-color: #3b82f6;
+            padding-left: 24px;
+        }
+        .sidebar .active,
+        .sidebar a.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, transparent 100%);
+            color: #ffffff;
+            border-left-color: #3b82f6;
+            font-weight: 600;
+        }
+        .sidebar i {
+            margin-right: 10px;
+            width: 18px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        /* Main content */
+        .main-content {
+            padding: 24px;
+        }
+
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+        }
+
+        /* Navbar - chiroyli */
+        .navbar {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #ffffff !important;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #1e293b !important;
+        }
+
+        /* Cards - modern shadow va rounded corners */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .card-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: 600;
+            padding: 16px 20px;
+        }
+        .card-header.bg-primary,
+        .card-header.bg-success,
+        .card-header.bg-danger,
+        .card-header.bg-warning,
+        .card-header.bg-info,
+        .card-header.bg-dark {
+            color: #ffffff;
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+        }
+
+        /* Tables */
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table thead th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 12px;
+        }
+        .table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+        .table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+        .table td {
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        /* Form controls */
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 10px 14px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        /* Badges */
+        .badge {
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+
+        /* Nav tabs */
+        .nav-tabs {
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            color: #64748b;
+            font-weight: 500;
+            padding: 10px 16px;
+            margin-right: 4px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s ease;
+        }
+        .nav-tabs .nav-link:hover {
+            color: #3b82f6;
+            background-color: #f1f5f9;
+        }
+        .nav-tabs .nav-link.active {
+            color: #3b82f6;
+            background-color: transparent;
+            border-bottom: 3px solid #3b82f6;
+            margin-bottom: -2px;
+        }
+
+        /* Dropdown */
+        .dropdown-menu {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 6px;
+        }
+        .dropdown-item {
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+        .dropdown-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 10px;
+            border: none;
+            padding: 14px 18px;
+        }
+    </style>
+    
+    <!-- All styling now handled by theme.css -->
+    
+    <style>
+    /* Placeholder ranglari dark theme uchun */
+    [data-theme="dark"] input::placeholder,
+    [data-theme="dark"] textarea::placeholder,
+    [data-theme="dark"] select::placeholder {
+        color: #94a3b8 !important;
+        opacity: 1 !important;
+    }
+    
+    [data-theme="dark"] input:-ms-input-placeholder,
+    [data-theme="dark"] textarea:-ms-input-placeholder,
+    [data-theme="dark"] select:-ms-input-placeholder {
+        color: #94a3b8 !important;
+    }
+    
+    [data-theme="dark"] input::-webkit-input-placeholder,
+    [data-theme="dark"] textarea::-webkit-input-placeholder,
+    [data-theme="dark"] select::-webkit-input-placeholder {
+        color: #94a3b8 !important;
+    }
+    
+    /* Force placeholder ranglar - barcha variantlar uchun */
+    input::placeholder,
+    textarea::placeholder,
+    select::placeholder {
+        color: #6c757d !important;
+        opacity: 1 !important;
+    }
+    </style>
+    
+    </head>
+<body data-theme="light">
+    <script>
+        // Body data-theme ni localStorage dan o'rnatish
+        (function() {
+            try {
+                var theme = localStorage.getItem('theme') || 'light';
+                document.body.setAttribute('data-theme', theme);
+                document.documentElement.setAttribute('data-theme', theme);
+                console.log('Body theme set to:', theme);
+            } catch (e) {
+                console.error('Theme set error:', e);
+            }
+        })();
+    </script>
+    <!-- Watermark Logo - har doim ko'rinadi -->
+    <div class="watermark-logo">
+        {% if request.session.site_logo %}
+            <img src="{{ request.session.site_logo }}" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <i class="bi bi-building" style="display: none;"></i>
+        {% else %}
+            <i class="bi bi-building"></i>
+        {% endif %}
+    </div>
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-white sticky-top">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <!-- Mobile menu toggle -->
+                <button class="btn btn-sm btn-outline-secondary me-2 mobile-menu-toggle" onclick="toggleMobileSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard' %}">
+                    {% if request.session.site_logo %}
+                        <img src="{{ request.session.site_logo }}" alt="Logo" class="navbar-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                        <i class="bi bi-building" style="font-size: 24px; margin-right: 8px; display: none;"></i>
+                    {% else %}
+                        <i class="bi bi-building" style="font-size: 24px; margin-right: 8px;"></i>
+                    {% endif %}
+                    Test-sinov-ucun
+                </a>
+            </div>
+            <div class="d-flex align-items-center">
+                <a href="{% url 'notifications' %}" class="btn btn-sm btn-outline-secondary me-2 position-relative">
+                    <i class="bi bi-bell"></i> Xabarlar
+                    {% if unread_notifications > 0 %}
+                    <span class="badge bg-danger rounded-pill notification-badge">{{ unread_notifications }}</span>
+                    {% endif %}
+                </a>
+                <div class="dropdown me-3">
+                    <a href="#" class="text-dark text-decoration-none dropdown-toggle d-inline-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" alt="Avatar"
+                                 style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #e5e7eb;">
+                        {% else %}
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">
+                                {{ user.first_name|default:user.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                        {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+                        ({% if active_role == 'super_admin' %}Super Admin
+                        {% elif active_role == 'admin' %}Admin
+                        {% elif active_role == 'hemis_id_adder' %}HEMIS ID Qo'shuvchi
+                        {% elif active_role == 'accountant' %}BUxgalter
+                        {% elif active_role == 'talaba_viewer' %}Talabani Ko'ruvchi
+                        {% elif active_role == 'archive' %}Arxiv
+                        {% elif active_role == 'student' %}Talaba
+                        {% elif active_role == 'employee' %}Xodim
+                        {% else %}Operator{% endif %})
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end bg-white border shadow-sm">
+                        <li><h6 class="dropdown-header">Rolni almashtirish</h6></li>
+                        {% for role in user.profile.get_all_roles %}
+                        <li>
+                            <a class="dropdown-item {% if request.session.active_role == role or not request.session.active_role and user.profile.role == role %}active{% endif %}" 
+                               href="{% url 'switch_role' role %}">
+                                {% if role == 'super_admin' %}<span class="badge bg-danger">Super Admin</span>
+                                {% elif role == 'admin' %}<span class="badge bg-warning text-dark">Admin</span>
+                                {% elif role == 'operator' %}<span class="badge bg-primary">Operator</span>
+                                {% elif role == 'hemis_id_adder' %}<span class="badge bg-info">HEMIS ID</span>
+                                {% elif role == 'accountant' %}<span class="badge bg-success">BUxgalter</span>
+                                {% elif role == 'talaba_viewer' %}<span class="badge bg-secondary">Ko'ruvchi</span>
+                                {% elif role == 'archive' %}<span class="badge bg-dark">Arxiv</span>
+                                {% elif role == 'student' %}<span class="badge bg-dark">Talaba</span>
+                                {% elif role == 'employee' %}<span class="badge bg-dark">Xodim</span>
+                                {% endif %}
+                                {% if request.session.active_role == role or not request.session.active_role and user.profile.role == role %}<i class="bi bi-check ms-2"></i>{% endif %}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-muted" href="{% url 'profile_settings' %}"><i class="bi bi-gear"></i> Profil sozlamalari</a></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Chiqish</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar p-0">
+                <div class="py-3">
+                    <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <i class="bi bi-speedometer2"></i> Bosh sahifa
+                    </a>
+                    
+                    {% if active_role not in 'admin,hemis_id_adder,talaba_viewer,archive,student,employee' %}
+                    <a href="{% url 'add_student' %}" class="{% if request.resolver_match.url_name == 'add_student' %}active{% endif %}">
+                        <i class="bi bi-person-plus"></i> Talaba qo'shish
+                    </a>
+                    <a href="{% url 'upload_students_excel' %}" class="{% if request.resolver_match.url_name == 'upload_students_excel' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-excel"></i> Excel orqali qo'shish
+                    </a>
+                    {% endif %}
+                    
+                    {% if active_role == 'student' or active_role == 'employee' %}
+                    <a href="{% url 'my_application' %}" class="{% if request.resolver_match.url_name == 'my_application' or request.resolver_match.url_name == 'submit_application' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text"></i> Mening arizam
+                    </a>
+                    {% endif %}
+                    
+                    {% if active_role == 'super_admin' or active_role == 'admin' %}
+                    <a href="{% url 'manage_faculties' %}" class="{% if request.resolver_match.url_name == 'manage_faculties' %}active{% endif %}">
+                        <i class="bi bi-building"></i> Fakultetlar
+                    </a>
+                    <a href="{% url 'upload_faculty_excel' %}" class="{% if request.resolver_match.url_name == 'upload_faculty_excel' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-excel"></i> Fakultet Excel
+                    </a>
+                    <a href="{% url 'upload_specialty_excel' %}" class="{% if request.resolver_match.url_name == 'upload_specialty_excel' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-excel"></i> Mutaxassislik Excel
+                    </a>
+                    <a href="{% url 'operator_statistics' %}" class="{% if request.resolver_match.url_name == 'operator_statistics' %}active{% endif %}">
+                        <i class="bi bi-bar-chart-line"></i> Operator Statistikasi
+                    </a>
+                    <a href="{% url 'operator_ranking' %}" class="{% if request.resolver_match.url_name == 'operator_ranking' %}active{% endif %}">
+                        <i class="bi bi-trophy"></i> Operator Reytingi
+                    </a>
+                    {% endif %}
+                    
+                    {% if active_role == 'super_admin' or active_role == 'admin' %}
+                    <a href="{% url 'logo_management' %}" class="{% if request.resolver_match.url_name == 'logo_management' %}active{% endif %}">
+                        <i class="bi bi-image"></i> Logotip
+                    </a>
+                    {% endif %}
+                    {% if active_role == 'super_admin' %}
+                    {# Bosh sahifa va Kirish sahifasi sozlamalari vaqtinchalik olib tashlandi #}
+                    {# <a href="{% url 'landing_settings' %}" class="{% if request.resolver_match.url_name == 'landing_settings' or request.resolver_match.url_name == 'landing_news_edit' %}active{% endif %}"> #}
+                    {#     <i class="bi bi-house-gear"></i> Bosh sahifa sozlamalari #}
+                    {# </a> #}
+                    {# <a href="{% url 'login_page_settings' %}" class="{% if request.resolver_match.url_name == 'login_page_settings' %}active{% endif %}"> #}
+                    {#     <i class="bi bi-pencil-square"></i> Kirish sahifasi matni #}
+                    {# </a> #}
+                    <a href="{% url 'email_settings' %}" class="{% if request.resolver_match.url_name == 'email_settings' %}active{% endif %}">
+                        <i class="bi bi-envelope-gear"></i> Email Sozlamalari
+                    </a>
+                    {% endif %}
+                    
+                    <!-- Offline navbat (xodimlar uchun foydali) -->
+                    <a href="{% url 'offline_queue' %}" class="{% if request.resolver_match.url_name == 'offline_queue' %}active{% endif %}">
+                        <i class="bi bi-cloud-arrow-up"></i> Offline navbat
+                    </a>
+
+                    <!-- E'lonlar (Barcha rollar uchun) -->
+                    <a href="{% url 'announcements_list' %}" class="{% if request.resolver_match.url_name == 'announcements_list' %}active{% endif %}">
+                        <i class="bi bi-megaphone"></i> E'lonlar
+                    </a>
+                    
+                    <!-- Chat (Barcha rollar uchun) -->
+                    <a href="{% url 'chat_list' %}" class="{% if 'chat' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="bi bi-chat-dots"></i> Chat
+                        {% if unread_chat_count > 0 %}
+                        <span class="badge bg-danger rounded-pill float-end">
+                            {{ unread_chat_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    
+                    <!-- Jonli efir (Barcha rollar uchun) -->
+                    <a href="{% url 'live_stream' 'main-room' %}" class="{% if request.resolver_match.url_name == 'live_stream' %}active{% endif %}">
+                        <i class="bi bi-camera-video-fill text-danger animate-pulse"></i> Jonli efir
+                        <span class="badge bg-danger rounded-pill float-end" style="font-size: 0.65rem;">LIVE</span>
+                    </a>
+                    
+                    {% if active_role == 'hemis_id_adder' or active_role == 'super_admin' or active_role == 'admin' %}
+                    <a href="{% url 'hemis_id_list' %}" class="{% if request.resolver_match.url_name == 'hemis_id_list' %}active{% endif %}">
+                        <i class="bi bi-card-list"></i> HEMIS ID Qo'shish
+                    </a>
+                    {% endif %}
+                    {# To'lovlar Boshqaruvi vaqtincha olib tashlandi #}
+                    {# {% if active_role == 'accountant' or active_role == 'super_admin' or active_role == 'admin' %} #}
+                    {# <a href="{% url 'accountant_dashboard' %}" class="{% if request.resolver_match.url_name == 'accountant_dashboard' or request.resolver_match.url_name == 'add_payment' or request.resolver_match.url_name == 'view_payments' %}active{% endif %}"> #}
+                    {#     <i class="bi bi-cash-coin"></i> To'lovlar Boshqaruvi #}
+                    {# </a> #}
+                    {# {% endif %} #}
+                    
+                    {% if active_role == 'operator' %}
+                    <a href="{% url 'excel_requests_list' %}" class="{% if request.resolver_match.url_name == 'excel_requests_list' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-excel"></i> Excel So'rovlari
+                    </a>
+                    {% endif %}
+                    
+                    {% if active_role == 'applicant' %}
+                    <a href="{% url 'my_application' %}" class="{% if request.resolver_match.url_name == 'my_application' or request.resolver_match.url_name == 'submit_application' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text"></i> Mening arizam
+                    </a>
+                    {% endif %}
+                    
+                    {% if active_role == 'admin' or active_role == 'super_admin' %}
+                    {% comment %}
+                    <a href="{% url 'applications_list' %}" class="{% if request.resolver_match.url_name == 'applications_list' or request.resolver_match.url_name == 'process_application' %}active{% endif %}">
+                        <i class="bi bi-journal-bookmark"></i> Arizalar (O'zi ro'yxatdan o'tganlar)
+                    </a>
+                    {% endcomment %}
+                    <a href="{% url 'all_applicants_list' %}" class="{% if request.resolver_match.url_name == 'all_applicants_list' %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i> Barcha Foydalanuvchilar
+                    </a>
+                    <a href="{% url 'excel_requests_list' %}" class="{% if request.resolver_match.url_name == 'excel_requests_list' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-excel"></i> Excel So'rovlari
+                    </a>
+                    {% endif %}
+                    
+                    {% if active_role == 'super_admin' %}
+                    <a href="{% url 'audit_logs' %}" class="{% if request.resolver_match.url_name == 'audit_logs' %}active{% endif %}">
+                        <i class="bi bi-activity"></i> Audit Loglar
+                    </a>
+                    <a href="{% url 'manage_users' %}" class="{% if request.resolver_match.url_name == 'manage_users' or request.resolver_match.url_name == 'create_user' or request.resolver_match.url_name == 'edit_user' %}active{% endif %}">
+                        <i class="bi bi-people"></i> Foydalanuvchilar
+                    </a>
+                    <a href="{% url 'excel_import_settings' %}" class="{% if request.resolver_match.url_name == 'excel_import_settings' %}active{% endif %}">
+                        <i class="bi bi-gear-fill"></i> Excel Import Sozlamalari
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 main-content">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if "Reaksiya" not in message and "reaction" not in message and "reaksiya" not in message %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer with current time -->
+    <footer class="bg-light text-center py-3 mt-4" id="footer">
+        <div class="container">
+            <!-- Theme toggle buttons -->
+            <div class="mb-3">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary" onclick="setTheme('light')" id="light-theme">
+                        <i class="bi bi-sun"></i> Oq Tema
+                    </button>
+                    <button type="button" class="btn btn-outline-dark" onclick="setTheme('dark')" id="dark-theme">
+                        <i class="bi bi-moon"></i> Qora Tema
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">
+                        <i class="bi bi-clock"></i> 
+                        <span id="current-time"></span>
+                    </p>
+                </div>
+                            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Mobile Sidebar Toggle -->
+    <script>
+        function toggleMobileSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('mobile-open');
+        }
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                sidebar.classList.contains('mobile-open') &&
+                !sidebar.contains(e.target) && 
+                !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+    </script>
+    
+    <!-- Custom JavaScript Modules -->
+    <script src="{% static 'js/toast-notifications.js' %}"></script>
+    <script src="{% static 'js/realtime-notifications.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/theme-global.js' %}?v=20260511-2"></script>
+    <script src="{% static 'js/drag-drop-upload.js' %}"></script>
+    <script src="{% static 'js/offline-sync.js' %}"></script>
+    <script src="{% static 'js/offline-form.js' %}"></script>
+    <script src="{% static 'js/offline-indicator.js' %}"></script>
+    <script src="{% static 'js/capacitor-bridge.js' %}"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // Service worker MUST be at root scope - serve from /sw.js
+                navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                    .then(function(reg) {
+                        console.log('[SW] registered with scope:', reg.scope);
+                        // Yangi versiya bo'lsa avtomatik update
+                        reg.addEventListener('updatefound', () => {
+                            const nw = reg.installing;
+                            if (nw) {
+                                nw.addEventListener('statechange', () => {
+                                    if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                                        console.log('[SW] Yangi versiya tayyor');
+                                    }
+                                });
+                            }
+                        });
+                    })
+                    .catch(function(err) {
+                        console.error('[SW] registration failed:', err);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Global bildirishnomalar uchun container -->
+    <div id="live-alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+    <!-- Meta tags for JavaScript -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    {% if user.is_authenticated %}
+    <meta name="user-id" content="{{ user.id }}">
+    {% endif %}
+
+    <!-- Global WebSocket bildirishnomalar -->
+    <script>
+    (function() {
+        // Global bildirishnomalar uchun WebSocket ulanish
+        try {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+            const notifSocket = new WebSocket(wsProtocol + window.location.host + '/ws/notifications/');
+            
+            notifSocket.onmessage = function(e) {
+                try {
+                    const data = JSON.parse(e.data);
+                    if (data.action === 'live_started') {
+                        const alertContainer = document.getElementById('live-alert-container');
+                        if (alertContainer) {
+                            alertContainer.innerHTML = `
+                                <div class="alert alert-danger alert-dismissible fade show shadow-lg d-flex align-items-center gap-3" role="alert" style="min-width: 350px; border-left: 5px solid #dc3545;">
+                                    <i class="bi bi-broadcast animate-pulse" style="font-size: 1.5rem; color: #dc3545;"></i>
+                                    <div>
+                                        <strong>${data.message}</strong><br>
+                                        <a href="/live/${data.room_name}/" class="btn btn-sm btn-danger mt-1">
+                                            <i class="bi bi-camera-video-fill"></i> Efirga qo'shilish
+                                        </a>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            `;
+                            
+                            // 30 soniyadan keyin avtomatik yopish
+                            setTimeout(function() {
+                                const alert = alertContainer.querySelector('.alert');
+                                if (alert) {
+                                    alert.classList.remove('show');
+                                    setTimeout(function() {
+                                        alertContainer.innerHTML = '';
+                                    }, 300);
+                                }
+                            }, 30000);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Global bildirishnoma xatolik:', err);
+                }
+            };
+            
+            notifSocket.onopen = function() {
+                console.log('Global bildirishnomalar WebSocket ulandi');
+            };
+            
+            notifSocket.onclose = function() {
+                console.log('Global bildirishnomalar WebSocket uzildi');
+                // 10 soniyadan keyin qayta ulanish
+                setTimeout(function() {
+                    console.log('Global bildirishnomalar qayta ulanmoqda...');
+                    // Sahifani qayta yuklash orqali yangi ulanish o'rnatiladi
+                }, 10000);
+            };
+            
+            notifSocket.onerror = function(err) {
+                console.error('Global bildirishnomalar WebSocket xatolik:', err);
+            };
+        } catch (err) {
+            console.error('Global bildirishnomalar WebSocket yaratishda xatolik:', err);
+        }
+    })();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}Bloklangan Foydalanuvchilar - Test-sinov-ucun{% endblock %}
+{% block content %}
+<h2><i class="bi bi-shield-exclamation"></i> Bloklangan Foydalanuvchilar</h2>
+<hr>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <input type="text" name="search" class="form-control" placeholder="Username yoki IP address bo'yicha qidiring..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Qidirish
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'blocked_users' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-x-circle"></i> Tozalash
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="?download=excel{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-success w-100">
+                    <i class="bi bi-download"></i> Yuklab olish
+                </a>
+            </div>
+        </form>
+        
+        {% if search_query %}
+        <div class="alert alert-info mt-3">
+            <i class="bi bi-info-circle"></i> 
+            <strong>Qidiruv:</strong> "{{ search_query }}" bo'yicha {{ page_obj.paginator.count }} ta topildi
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Username</th>
+                        <th>IP Address</th>
+                        <th>Urinishlar Soni</th>
+                        <th>Vaqt</th>
+                        <th>User Agent</th>
+                        <th>Fail Reason</th>
+                        <th>Amal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in page_obj %}
+                    <tr>
+                        <td><strong>{{ attempt.username|default:"Noma'lum" }}</strong></td>
+                        <td><code>{{ attempt.ip_address|default:"Noma'lum" }}</code></td>
+                        <td><span class="badge bg-danger">{{ attempt.failures_since_start|default:0 }}</span></td>
+                        <td>{{ attempt.attempt_time|date:"d.m.Y H:i:s" }}</td>
+                        <td><small>{{ attempt.user_agent|truncatechars:50|default:"Noma'lum" }}</small></td>
+                        <td><small>{{ attempt.failure_reason|default:"Noma'lum" }}</small></td>
+                        <td>
+                            <a href="{% url 'unlock_user_direct' attempt.username %}" 
+                               class="btn btn-sm btn-warning"
+                               onclick="return confirm('{{ attempt.username }} foydalanuvchini blokdan chiqarishni tasdiqlaysizmi?')">
+                                <i class="bi bi-unlock"></i> Blokdan chiqar
+                            </a>
+                            <a href="/admin/axes/accessattempt/" target="_blank" class="btn btn-sm btn-outline-secondary ms-1">
+                                <i class="bi bi-gear"></i> Admin
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-success">
+                            <i class="bi bi-check-circle"></i> Bloklangan foydalanuvchilar yo'q
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">Birinchi</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Oldingi</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">
+                        Sahifa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Keyingi</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">Oxirgi</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-3">
+    <div class="d-flex gap-2">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Dashboardga qaytish
+        </a>
+    </div>
+</div>
+{% endblock %}

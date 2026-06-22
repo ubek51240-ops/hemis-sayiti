@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+{% block title %}Bosh sahifa sozlamalari{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-house-gear"></i> Bosh sahifa sozlamalari</h2>
+        <a href="{% url 'landing' %}" target="_blank" class="btn btn-outline-primary">
+            <i class="bi bi-eye"></i> Sahifani ko'rish
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#hero-tab" type="button">
+                <i class="bi bi-megaphone"></i> Hero (Bosh)
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#about-tab" type="button">
+                <i class="bi bi-info-circle"></i> Universitet haqida
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contact-tab" type="button">
+                <i class="bi bi-telephone"></i> Kontakt
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#stats-tab" type="button">
+                <i class="bi bi-bar-chart"></i> Statistika
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#news-tab" type="button">
+                <i class="bi bi-newspaper"></i> Yangiliklar
+            </button>
+        </li>
+    </ul>
+
+    <!-- Main form wraps tab-content (news tab uses separate forms inline) -->
+    <form method="POST" enctype="multipart/form-data" id="mainSettingsForm">
+        {% csrf_token %}
+    </form>
+
+    <div class="tab-content">
+        <!-- Hero Tab -->
+        <div class="tab-pane fade show active" id="hero-tab" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Bosh sahifaning hero qismi</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label">Subtitle (kichik sarlavha)</label>
+                        <input form="mainSettingsForm" type="text" name="hero_subtitle" class="form-control"
+                               value="{{ content.hero_subtitle|default:'TALABA BOSHQARUV TIZIMI' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Asosiy sarlavha</label>
+                        <input form="mainSettingsForm" type="text" name="hero_title" class="form-control"
+                               value="{{ content.hero_title|default:'Ta\'lim va taraqqiyot yo\'lidamiz' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tavsif</label>
+                        <textarea form="mainSettingsForm" name="hero_description" class="form-control" rows="3">{{ content.hero_description|default:'' }}</textarea>
+                    </div>
+
+                    <div class="row">
+                        <!-- Hero Rasm -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold"><i class="bi bi-image"></i> Hero rasm</label>
+                            {% if content.hero_image %}
+                            <div class="media-preview-card mb-2">
+                                <img src="{{ content.hero_image.url }}" alt="Hero rasm">
+                                <div class="media-preview-actions">
+                                    <a href="{{ content.hero_image.url }}" target="_blank" class="btn btn-sm btn-light">
+                                        <i class="bi bi-eye"></i> Ko'rish
+                                    </a>
+                                    <label class="btn btn-sm btn-warning mb-0">
+                                        <i class="bi bi-arrow-repeat"></i> Almashtirish
+                                        <input form="mainSettingsForm" type="file" name="hero_image" accept="image/*" class="d-none" onchange="previewMedia(this, 'imgPreview')">
+                                    </label>
+                                    <button type="submit" form="mainSettingsForm" name="delete_hero_image" value="1" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Rasmni o\'chirishni tasdiqlaysizmi?');">
+                                        <i class="bi bi-trash"></i> O'chirish
+                                    </button>
+                                </div>
+                                <div id="imgPreview" class="mt-2"></div>
+                            </div>
+                            {% else %}
+                            <input form="mainSettingsForm" type="file" name="hero_image" class="form-control" accept="image/*" onchange="previewMedia(this, 'imgPreview')">
+                            <div id="imgPreview" class="mt-2"></div>
+                            <small class="text-muted">JPG, PNG (tavsiya: 1920x1080)</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Hero Video -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold"><i class="bi bi-camera-video"></i> Hero video</label>
+                            {% if content.hero_video %}
+                            <div class="media-preview-card mb-2">
+                                <video src="{{ content.hero_video.url }}" controls></video>
+                                <div class="media-preview-actions">
+                                    <a href="{{ content.hero_video.url }}" target="_blank" class="btn btn-sm btn-light">
+                                        <i class="bi bi-eye"></i> Ko'rish
+                                    </a>
+                                    <label class="btn btn-sm btn-warning mb-0">
+                                        <i class="bi bi-arrow-repeat"></i> Almashtirish
+                                        <input form="mainSettingsForm" type="file" name="hero_video" accept="video/*" class="d-none" onchange="previewMedia(this, 'vidPreview')">
+                                    </label>
+                                    <button type="submit" form="mainSettingsForm" name="delete_hero_video" value="1" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Videoni o\'chirishni tasdiqlaysizmi?');">
+                                        <i class="bi bi-trash"></i> O'chirish
+                                    </button>
+                                </div>
+                                <div id="vidPreview" class="mt-2"></div>
+                            </div>
+                            {% else %}
+                            <input form="mainSettingsForm" type="file" name="hero_video" class="form-control" accept="video/*" onchange="previewMedia(this, 'vidPreview')">
+                            <div id="vidPreview" class="mt-2"></div>
+                            <small class="text-muted">MP4 (tavsiya: 5-10MB dan kam)</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info small mt-2">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Eslatma:</strong> Agar ham rasm, ham video yuklansa - <strong>video</strong> birinchi ko'rsatiladi.
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 d-flex justify-content-end">
+                <button form="mainSettingsForm" type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle"></i> Saqlash
+                </button>
+            </div>
+        </div>
+
+        <!-- About Tab -->
+        <div class="tab-pane fade" id="about-tab" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Universitet haqida bo'limi</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Sarlavha</label>
+                        <input form="mainSettingsForm" type="text" name="about_title" class="form-control"
+                               value="{{ content.about_title|default:'Bizning maqsadimiz' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Matn</label>
+                        <textarea form="mainSettingsForm" name="about_text" class="form-control" rows="6">{{ content.about_text|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 d-flex justify-content-end">
+                <button form="mainSettingsForm" type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle"></i> Saqlash
+                </button>
+            </div>
+        </div>
+
+        <!-- Contact Tab -->
+        <div class="tab-pane fade" id="contact-tab" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Kontakt ma'lumotlari</h5>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-geo-alt"></i> Manzil</label>
+                        <input form="mainSettingsForm" type="text" name="contact_address" class="form-control"
+                               value="{{ content.contact_address|default:'Toshkent sh., O\'zbekiston' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-telephone"></i> Telefon</label>
+                        <input form="mainSettingsForm" type="text" name="contact_phone" class="form-control"
+                               value="{{ content.contact_phone|default:'+998 71 123 45 67' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-envelope"></i> Email</label>
+                        <input form="mainSettingsForm" type="email" name="contact_email" class="form-control"
+                               value="{{ content.contact_email|default:'info@minihemis.uz' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-map"></i> Google Maps URL (manzil linki)</label>
+                        <input form="mainSettingsForm" type="url" name="contact_location_url" class="form-control"
+                               placeholder="https://maps.google.com/..."
+                               value="{{ content.contact_location_url|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 d-flex justify-content-end">
+                <button form="mainSettingsForm" type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle"></i> Saqlash
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div class="tab-pane fade" id="stats-tab" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Statistika raqamlari (qo'lda sozlash)</h5>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Eslatma:</strong> Bu maydonlarni to'ldirsangiz, bosh sahifada avtomatik hisoblangan raqamlar o'rniga siz kiritgan raqamlar ko'rsatiladi. Maydonni bo'sh qoldirsangiz, avtomatik hisoblanadi.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label"><i class="bi bi-people-fill"></i> Talabalar soni</label>
+                            <input form="mainSettingsForm" type="number" name="override_students_count" class="form-control"
+                                   placeholder="Avtomatik hisoblash uchun bo'sh qoldiring"
+                                   value="{{ content.override_students_count|default:'' }}">
+                            <small class="text-muted">Joriy: {{ stats.total_students|default:"0" }} ta (avtomatik)</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label"><i class="bi bi-file-text-fill"></i> Arizalar soni</label>
+                            <input form="mainSettingsForm" type="number" name="override_applications_count" class="form-control"
+                                   placeholder="Avtomatik hisoblash uchun bo'sh qoldiring"
+                                   value="{{ content.override_applications_count|default:'' }}">
+                            <small class="text-muted">Joriy: {{ stats.total_applications|default:"0" }} ta (avtomatik)</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label"><i class="bi bi-building"></i> Fakultetlar soni</label>
+                            <input form="mainSettingsForm" type="number" name="override_faculties_count" class="form-control"
+                                   placeholder="Avtomatik hisoblash uchun bo'sh qoldiring"
+                                   value="{{ content.override_faculties_count|default:'' }}">
+                            <small class="text-muted">Joriy: {{ stats.faculties_count|default:"0" }} ta (avtomatik)</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label"><i class="bi bi-journal-bookmark-fill"></i> Yo'nalishlar soni</label>
+                            <input form="mainSettingsForm" type="number" name="override_specialties_count" class="form-control"
+                                   placeholder="Avtomatik hisoblash uchun bo'sh qoldiring"
+                                   value="{{ content.override_specialties_count|default:'' }}">
+                            <small class="text-muted">Joriy: {{ stats.specialties_count|default:"0" }} ta (avtomatik)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 d-flex justify-content-end">
+                <button form="mainSettingsForm" type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle"></i> Saqlash
+                </button>
+            </div>
+        </div>
+
+        <!-- News Tab -->
+        <div class="tab-pane fade" id="news-tab" role="tabpanel">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Yangi yangilik qo'shish</h5>
+                    <form method="POST" action="{% url 'landing_news_add' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Sarlavha</label>
+                                <input type="text" name="title" class="form-control" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Tartib raqami</label>
+                                <input type="number" name="order" class="form-control" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tavsif</label>
+                            <textarea name="description" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Rasm</label>
+                                <input type="file" name="image" class="form-control" accept="image/*">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Video URL (YouTube embed)</label>
+                                <input type="url" name="video_url" class="form-control"
+                                       placeholder="https://www.youtube.com/embed/...">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Batafsil link</label>
+                                <input type="url" name="link" class="form-control">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i> Yangilik qo'shish
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <h5 class="mb-3">Mavjud yangiliklar</h5>
+            <div class="row g-3">
+                {% for news in news_items %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                        {% if news.image %}
+                        <img src="{{ news.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                        {% elif news.video_url %}
+                        <div style="height: 180px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-play-circle" style="font-size: 3rem; color: #666;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="card-title">{{ news.title }}</h6>
+                                {% if news.is_active %}
+                                <span class="badge bg-success">Faol</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Nofaol</span>
+                                {% endif %}
+                            </div>
+                            <p class="card-text small text-muted">{{ news.description|truncatechars:80 }}</p>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'landing_news_edit' news.pk %}" class="btn btn-sm btn-outline-primary flex-grow-1">
+                                    <i class="bi bi-pencil"></i> Tahrirlash
+                                </a>
+                                <form method="POST" action="{% url 'landing_news_delete' news.pk %}"
+                                      onsubmit="return confirm('O\'chirishni xohlaysizmi?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">Hozircha yangiliklar qo'shilmagan.</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .media-preview-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 12px;
+        background: #f8f9fa;
+    }
+    .media-preview-card img,
+    .media-preview-card video {
+        width: 100%;
+        max-height: 250px;
+        object-fit: cover;
+        border-radius: 8px;
+        display: block;
+        margin-bottom: 10px;
+    }
+    .media-preview-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .media-preview-actions .btn {
+        flex: 1;
+        min-width: 90px;
+    }
+    #imgPreview img, #vidPreview video {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 8px;
+        border: 2px dashed #28a745;
+        padding: 4px;
+    }
+</style>
+
+<script>
+    function previewMedia(input, previewId) {
+        const preview = document.getElementById(previewId);
+        preview.innerHTML = '';
+        const file = input.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        let element;
+        if (file.type.startsWith('video/')) {
+            element = document.createElement('video');
+            element.controls = true;
+        } else {
+            element = document.createElement('img');
+        }
+        element.src = url;
+        const label = document.createElement('div');
+        label.innerHTML = '<small class="text-success"><i class="bi bi-check-circle"></i> Yangi fayl tanlandi: <strong>' + file.name + '</strong></small>';
+        preview.appendChild(label);
+        preview.appendChild(element);
+    }
+</script>
+
+{% endblock %}

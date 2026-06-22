@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block title %}Email Sozlamalari - Test-sinov-ucun{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-envelope-gear"></i> Email Sozlamalari</h2>
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-plus-circle"></i> Yangi Email Sozlama</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Email manzili</label>
+                            <input type="email" name="email" class="form-control" required
+                                   placeholder="example@gmail.com" value="{{ current_settings.email|default:'' }}">
+                            <small class="text-muted">Email manzilini kiriting (masalan: gmail)</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email paroli</label>
+                            <input type="password" name="password" class="form-control" required
+                                   placeholder="Email paroli">
+                            <div class="alert alert-warning mt-2">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                <strong>Gmail uchun App Password kerak!</strong><br>
+                                <small>
+                                    <strong>Qadam 1:</strong> <a href="https://myaccount.google.com/" target="_blank">Google Account</a> ga kiring<br>
+                                    <strong>Qadam 2:</strong> <a href="https://myaccount.google.com/security" target="_blank">Security</a> bo'limiga o'ting<br>
+                                    <strong>Qadam 3:</strong> <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank">2-Step Verification</a> ni <strong>yoqing</strong><br>
+                                    <strong>Qadam 4:</strong> <a href="https://myaccount.google.com/apppasswords" target="_blank">App passwords</a> ga o'ting<br>
+                                    <strong>Qadam 5:</strong> "Select app" → "Other (Custom name)" → "Test-sinov-ucun" deb yozing<br>
+                                    <strong>Qadam 6:</strong> "Generate" tugmasini bosing (16 ta belgili parol hosil bo'ladi)<br>
+                                    <strong>Qadam 7:</strong> Hosil bo'lgan parolni nusxalab, shu yerga kiriting
+                                </small>
+                                <div class="mt-2">
+                                    <small class="text-info">
+                                        <strong>To'g'ridan-to'g'ri linklar:</strong><br>
+                                        • <a href="https://myaccount.google.com/apppasswords" target="_blank">App Password Generator</a><br>
+                                        • <a href="https://support.google.com/accounts/answer/185833" target="_blank">App Password Yordam</a>
+                                    </small>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-success">
+                                        <strong>Muhim:</strong> App Password faqat bir marta ko'rsatiladi, 
+                                        saqlab oling!
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">SMTP server</label>
+                            <input type="text" name="smtp_host" class="form-control"
+                                   value="smtp.gmail.com" readonly>
+                            <small class="text-muted">Gmail SMTP server</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">SMTP port</label>
+                            <input type="number" name="smtp_port" class="form-control"
+                                   value="587" readonly>
+                            <small class="text-muted">Gmail SMTP port</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="use_tls" class="form-check-input" id="use_tls" checked>
+                                <label class="form-check-label" for="use_tls">
+                                    TLS ishlatish
+                                </label>
+                                <small class="text-muted d-block">Xavfsiz ulanish uchun</small>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Saqlash va Test Qilish
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-list"></i> Email Sozlamalari Tarixi</h5>
+                </div>
+                <div class="card-body">
+                    {% if current_settings %}
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i>
+                            <strong>Joriy faol sozlama:</strong><br>
+                            Email: <strong>{{ current_settings.email }}</strong><br>
+                            Status: <span class="badge bg-success">Faol</span>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Hozircha faol email sozlama yo'q!</strong><br>
+                            Iltimos, yangi email sozlama qo'shing.
+                        </div>
+                    {% endif %}
+                    
+                    {% if all_settings %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Sana</th>
+                                        <th>Amallar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for setting in all_settings %}
+                                    <tr>
+                                        <td>{{ setting.email }}</td>
+                                        <td>
+                                            {% if setting.is_active %}
+                                                <span class="badge bg-success">Faol</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Nofaol</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ setting.created_at|date:"d.m.Y H:i" }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'test_email' setting.id %}"
+                                                   class="btn btn-outline-info" title="Test qilish">
+                                                    <i class="bi bi-envelope"></i>
+                                                </a>
+                                                {% if not setting.is_active %}
+                                                <a href="{% url 'toggle_email' setting.id %}"
+                                                   class="btn btn-outline-success" title="Faollashtirish">
+                                                    <i class="bi bi-check"></i>
+                                                </a>
+                                                {% endif %}
+                                                <a href="{% url 'edit_email' setting.id %}"
+                                                   class="btn btn-outline-warning" title="Tahrirlash">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                {% if not setting.is_active %}
+                                                <form method="POST" action="{% url 'delete_email' setting.id %}" class="d-inline"
+                                                      onsubmit="return confirm('{{ setting.email }} - sozlamasini o\'chirishni tasdiqlaysizmi?');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-outline-danger" title="O'chirish">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                                {% else %}
+                                                <button class="btn btn-outline-danger" disabled title="Faol sozlamani o'chirib bo'lmaydi">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Hozircha email sozlamalari yo'q.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
