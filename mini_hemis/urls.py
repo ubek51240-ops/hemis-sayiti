@@ -5,6 +5,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import re_path
+from django.views.static import serve
 from django.views.generic import TemplateView
 from core.admin import unlock_user_view
 from django.http import HttpResponse, FileResponse
@@ -50,9 +52,13 @@ urlpatterns = [
 # Custom 404 handler
 handler404 = custom_404
 
-# Static files serving during development
+# Static and media files serving for production (Render)
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+]
+
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     # Serve from STATICFILES_DIRS (static/) not STATIC_ROOT (staticfiles/)
     for static_dir in settings.STATICFILES_DIRS:
         urlpatterns += static(settings.STATIC_URL, document_root=str(static_dir))
