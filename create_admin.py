@@ -10,9 +10,11 @@ from django.contrib.auth.models import User
 from core.models import Profile
 
 # Superuser yaratish
-if not User.objects.filter(username='admin').exists():
+admin_qs = User.objects.filter(username='admin')
+password = os.environ.get('SUPERADMIN_PASSWORD', 'Admin123!@#')
+
+if not admin_qs.exists():
     print("--- Yangi Super-admin Yaratish ---")
-    password = os.environ.get('SUPERADMIN_PASSWORD')
     while not password:
         password = getpass.getpass("Super-admin uchun kuchli parol kiriting (min 8 ta belgi): ")
         if len(password) < 8:
@@ -23,7 +25,12 @@ if not User.objects.filter(username='admin').exists():
     profile, created = Profile.objects.update_or_create(user=user, defaults={'role': 'super_admin'})
     print('Superuser "admin" muvaffaqiyatli yaratildi!')
 else:
-    print('Admin user allaqachon mavjud')
+    print('Admin user allaqachon mavjud, parolini yangilash...')
+    user = admin_qs.first()
+    if password:
+        user.set_password(password)
+        user.save()
+        print('Superuser "admin" paroli yangilandi!')
 
 # Test user yaratish
 if not User.objects.filter(username='operator').exists():
