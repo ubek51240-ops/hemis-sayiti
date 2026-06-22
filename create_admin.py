@@ -20,7 +20,7 @@ if not User.objects.filter(username='admin').exists():
             password = None
             
     user = User.objects.create_superuser('admin', 'admin@example.com', password)
-    profile = Profile.objects.create(user=user, role='super_admin')
+    profile, created = Profile.objects.update_or_create(user=user, defaults={'role': 'super_admin'})
     print('Superuser "admin" muvaffaqiyatli yaratildi!')
 else:
     print('Admin user allaqachon mavjud')
@@ -36,7 +36,7 @@ if not User.objects.filter(username='operator').exists():
             password = None
             
     user = User.objects.create_user('operator', 'operator@example.com', password)
-    profile = Profile.objects.create(user=user, role='operator')
+    profile, created = Profile.objects.update_or_create(user=user, defaults={'role': 'operator'})
     print('Operator "operator" muvaffaqiyatli yaratildi!')
 else:
     print('Operator user allaqachon mavjud')
