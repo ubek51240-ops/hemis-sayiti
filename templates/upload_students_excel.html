@@ -150,10 +150,7 @@
 
         <!-- Yuklash formasi -->
         <div id="uploadFormContainer">
-            <form method="post" enctype="multipart/form-data" id="uploadForm"
-                  data-offline-enabled="true"
-                  data-offline-label="Excel fayl"
-                  data-offline-type="excel_upload">
+            <form method="post" enctype="multipart/form-data" id="uploadForm">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-8">
@@ -195,55 +192,66 @@
 </div>
 
 <script>
-$(document).ready(function() {
-    // Yuklash uchun checkbox
-    $('#uploadConfirmCheckbox').on('change', function() {
-        const uploadBtn = $('#uploadBtn');
-        if ($(this).is(':checked')) {
-            uploadBtn.prop('disabled', false);
-            uploadBtn.css({ 'cursor': 'pointer', 'opacity': '1' });
-        } else {
-            uploadBtn.prop('disabled', true);
-            uploadBtn.css({ 'cursor': 'not-allowed', 'opacity': '0.65' });
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    var uploadConfirmCheckbox = document.getElementById('uploadConfirmCheckbox');
+    var uploadBtn = document.getElementById('uploadBtn');
+    var uploadForm = document.getElementById('uploadForm');
+    var excelFileInput = document.getElementById('id_excel_file');
+    var progressContainer = document.getElementById('progressContainer');
 
-    $('#uploadForm').on('submit', function(e) {
-        if (!$('#uploadConfirmCheckbox').is(':checked')) {
-            e.preventDefault();
-            alert('Excelni saytga yuklash uchun avval checkbox-ni belgilang.');
-            return;
-        }
+    // Checkbox o'zgarishini kuzatish
+    if (uploadConfirmCheckbox && uploadBtn) {
+        uploadConfirmCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                uploadBtn.disabled = false;
+                uploadBtn.style.cursor = 'pointer';
+                uploadBtn.style.opacity = '1';
+            } else {
+                uploadBtn.disabled = true;
+                uploadBtn.style.cursor = 'not-allowed';
+                uploadBtn.style.opacity = '0.65';
+            }
+        });
+    }
 
-        const fileInput = $('#id_excel_file')[0];
-        const file = fileInput.files[0];
-        
-        if (!file) {
-            e.preventDefault();
-            alert('Iltimos, Excel faylini tanlang!');
-            return;
-        }
-        
-        // Fayl turlarini tekshirish
-        const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
-        const fileName = file.name.toLowerCase();
-        
-        if (!fileName.endsWith('.xlsx') && !fileName.endsWith('.xls')) {
-            e.preventDefault();
-            alert('Faqat .xlsx yoki .xls formatdagi fayllar yuklash mumkin!');
-            return;
-        }
-        
-        // Progress barni ko'rsatish
-        $('#uploadBtn').prop('disabled', true);
-        $('#progressContainer').show();
-    });
-    
-    // Fayl tanlanganda fayl nomini ko'rsatish
-    $('#id_excel_file').on('change', function() {
-        const fileName = $(this)[0].files[0]?.name || 'Fayl tanlanmagan';
-        $(this).next('.custom-file-label').text(fileName);
-    });
+    // Forma submit
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function(e) {
+            if (!uploadConfirmCheckbox || !uploadConfirmCheckbox.checked) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                alert('Excelni saytga yuklash uchun avval checkbox-ni belgilang.');
+                return;
+            }
+
+            var fileInput = excelFileInput;
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                alert('Iltimos, Excel faylini tanlang!');
+                return;
+            }
+
+            var file = fileInput.files[0];
+            var fileName = file.name.toLowerCase();
+
+            if (!fileName.endsWith('.xlsx') && !fileName.endsWith('.xls')) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                alert('Faqat .xlsx yoki .xls formatdagi fayllar yuklash mumkin!');
+                return;
+            }
+
+            // Progress barni ko'rsatish
+            if (uploadBtn) {
+                uploadBtn.disabled = true;
+                uploadBtn.style.opacity = '0.65';
+            }
+            if (progressContainer) {
+                progressContainer.style.display = 'block';
+            }
+        });
+    }
 });
 </script>
 {% endblock %}
